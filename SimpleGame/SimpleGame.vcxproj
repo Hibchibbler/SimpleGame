@@ -147,6 +147,7 @@
   <ItemGroup>
     <ClCompile Include="Comm.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="TankGame.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Comm.h" />

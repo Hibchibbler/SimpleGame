@@ -21,6 +21,9 @@
     <ClCompile Include="Comm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TankGame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Comm.h">

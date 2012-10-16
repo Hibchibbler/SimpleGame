@@ -1,6 +1,8 @@
 #ifndef Floor_h_
 #define Floor_h_
 
+#include <SFML/Graphics.hpp>
+
 namespace sg
 {
     class Floor
@@ -22,7 +24,7 @@ namespace sg
                 for (int w = 0; w < width;w++){
                     spriteTiles[h][w].setTexture(*texTiles.back());
                     //spriteTiles[h][w].scale(0.75f,0.75f);//32
-                    spriteTiles[h][w].setPosition(w*128-200,h*128-150);//TODO: i do not know why 200 and 150 need to be there for the floor to line up on the top and left edge of view
+                    spriteTiles[h][w].setPosition((float)(w*128-200),(float)(h*128-150));//TODO: i do not know why 200 and 150 need to be there for the floor to line up on the top and left edge of view
                 }
             }
         }

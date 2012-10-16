@@ -2,6 +2,7 @@
 #define Player_h_
 
 #include <SFML/Graphics.hpp>
+
 namespace sg
 {
     class Frame

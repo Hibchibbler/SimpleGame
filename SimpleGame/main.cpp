@@ -5,11 +5,11 @@ int main(int argc, char **argv)
 
     //Instantiate the game state
     sg::TankGame tankGame;
-    tankGame.init();
+    tankGame.onInit();
     
     //House keeping variables
     sf::Clock clock;
-
+    sf::Clock localInputTimer;
     sf::Time frameTime;
     sf::Time previousTime;
     sf::Time currentTime;
@@ -18,18 +18,22 @@ int main(int argc, char **argv)
     // Start game loop
     while (tankGame.window.isOpen()){
 
-        // Handle Local Input
+        // Handle Local Events
         sf::Event windowEvent;
         while (tankGame.window.pollEvent(windowEvent)){
             if (!tankGame.onLocalEvent(windowEvent)){
                 tankGame.window.close();
             }
         }
-        //Handle  Comm Input
+
+        //Handle  Comm Events
         sg::CommPacket packet;
         while (tankGame.comm.Receive(packet)){
             tankGame.onRemoteEvent(packet);
         }
+ 
+        //Handle fast local input
+        tankGame.onLocalInput();
 
         //Get our master timer stuff
         previousTime = currentTime;
@@ -46,9 +50,12 @@ int main(int argc, char **argv)
 
         //keep this thread from hogging cpu
         //don't feel like heating up my cpu while testing..
-        sf::sleep(sf::milliseconds(50));
-
+        sf::sleep(sf::milliseconds(30));
     }
+
+    tankGame.onCleanup();
+
+
     return EXIT_SUCCESS;
 }
 

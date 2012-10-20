@@ -12,6 +12,14 @@ namespace sg
         sf::Texture tex;
     };
 
+    class Projectile
+    {
+    public:
+        sf::Vector2f position;
+        sf::Vector2f velocity;
+        sf::Sprite sprite;
+    };
+
     class Player
     {
     public:
@@ -24,19 +32,23 @@ namespace sg
             turretAngle = 0.0f;
         }
         std::string name;
+
         std::vector<Frame> bodyFrames;
-        sf::Image bodyImage;
-        sf::Image turretImage;
-        sf::Texture bodyTex;
-        sf::Texture turretTex;
+        Frame turretFrame;
+        Frame projectileFrame;
+
         sf::Sprite bodySprite;
         sf::Sprite turretSprite;
+        std::vector<Projectile> projectiles;
+
+        sf::Vector2f position;
         sf::Vector2f velocity;
+
         float throttle;
         float bodyAngle;
         float turretAngle;
     };
 };
-#endif
 
+#endif
 

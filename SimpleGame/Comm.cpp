@@ -129,17 +129,14 @@ void sg::Comm::CommLooper(Comm* comm)
                 std::cout << "Client connected from " << newConnection.Socket->getRemoteAddress().toString() << std::endl;
 
                 // Add the client to our internal list
-
                 newConnection.connectionId = comm->TotalConnectCount;
                 newConnection.IsConnected = true;
                 comm->Established.push_back(newConnection);
 
                 //And add the client to the selector
                 comm->EstablishedSelector.add(*newConnection.Socket);
-
+                comm->SendSystem(sg::CommPacket::Acceptance, comm->TotalConnectCount, std::string("accepted Connection Request"));
                 comm->TotalConnectCount++;
-
-                comm->SendSystem(sg::CommPacket::Acceptance, newConnection.connectionId, std::string("accepted Connection Request"));
             }else{
                 //TODO: Handle This!!!!!!!!!
                 std::cout << "Unable to accept" << std::endl;
@@ -162,13 +159,12 @@ void sg::Comm::CommLooper(Comm* comm)
                 
                     i->connectionId = comm->TotalConnectCount;
                     i->IsConnected = true;
-                    comm->TotalConnectCount++;
                     
                     comm->EstablishedSelector.add(*i->Socket);
                     comm->Established.push_back(*i);//this must run before the QueueSystemMessage
                     
-                    comm->SendSystem(sg::CommPacket::Acceptance,comm->Established.back().connectionId, std::string("Connected"));
-
+                    comm->SendSystem(sg::CommPacket::Acceptance,comm->TotalConnectCount, std::string("Connected"));
+                    comm->TotalConnectCount++;
                     //The last thing we do.
                     i = comm->Connecting.erase(i);
                 }else {

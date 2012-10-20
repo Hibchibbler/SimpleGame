@@ -25,26 +25,16 @@ namespace sg
             aniIndex=0;
             sf::View newView(sf::Vector2f(0.0f,0.0f),sf::Vector2f(400.0f, 300.0f));
             window.setView(newView);
-        
+            gameWindowHasFocus = true;
 
         }
 
-        void sendState(sg::Comm & comm, sf::Uint32 id, sf::Vector2f velocity, float bodyAngle, float turretAngle);
-        
-        //void execute(){
-        //    onInit();
-        //    while (!gameDone){
-        //        onEvent();
-        //        onLoop();
-        //        onRender();
-        //    }
-        //    onCleanup();
-        //}
+        void sendState();
 
-        
-        void init();
+        void onInit();
         void onRemoteEvent(sg::CommPacket & packet);
         bool onLocalEvent(sf::Event & event);
+        bool onLocalInput();
         void onLoop(sf::Time & frameTime);
         void onRender();
         void onCleanup();
@@ -55,12 +45,16 @@ namespace sg
         sf::Uint32 connectionId;
         int aniIndex;
         sf::Clock aniClock;
+        sf::Clock stateClock;
         sf::RenderWindow window;
         sg::Comm comm;
         Player player1;
         Player player2;
         sg::Floor floor;
         bool gameDone;
+        bool gameWindowHasFocus;
+        long bytesTransmitted;
+        long bytesReceoved;
     };
 }
 

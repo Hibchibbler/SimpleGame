@@ -91,10 +91,29 @@ void sg::TankGame::onRemoteEvent(sg::CommPacket & packet){
     }case sg::CommPacket::Data:{
         //Get other player's tank  position metrics
         // We call the other player, player2
+        int numProjectiles = 0;
         packet.packet >> player2.bodyAngle;
         packet.packet >> player2.turretAngle;
         packet.packet >> player2.position.x;
         packet.packet >> player2.position.y;
+        packet.packet >> numProjectiles;
+        for (int y = 0;y < numProjectiles;y++){
+            Projectile p;
+            packet.packet >> p.position.x;
+            packet.packet >> p.position.y;
+            packet.packet >> p.velocity.x;
+            packet.packet >> p.velocity.y;
+
+            p.sprite.setTexture(player2.projectileFrame.tex);
+            p.sprite.scale(0.5,0.5);
+            p.sprite.setOrigin(16,16);
+
+            //p.position.x += p.velocity.x;
+            //p.position.y += p.velocity.y;
+            p.sprite.setPosition(p.position);
+
+            player2.projectiles.push_back(p);
+        }
         //cout << "Rx'd, player2, " << packet.connectionId << ", " << player2.bodyAngle << ", " << player2.turretAngle << ", " << player2.velocity.x << ", " << player2.velocity.y << endl;
         break;
     }case sg::CommPacket::Sent:{
@@ -123,7 +142,15 @@ void sg::TankGame::sendState()
     packet.packet << player1.turretAngle;
     packet.packet << player1.position.x;
     packet.packet << player1.position.y;
-    
+    packet.packet << player1.projectiles.size();
+    std::vector<Projectile>::iterator proj = player1.projectiles.begin();
+    while (proj != player1.projectiles.end()){
+        packet.packet << proj->position.x;
+        packet.packet << proj->position.y;
+        packet.packet << proj->velocity.x;
+        packet.packet << proj->velocity.y;
+        proj++;
+    }
     if (connectionState){
         comm.Send(packet);
         //cout << "Tx'd, player1, " << packet.connectionId << ", " << player1.bodyAngle << ", " << player1.turretAngle << ", " << player1.velocity.x << ", " << player1.velocity.y << endl;
@@ -173,17 +200,12 @@ bool sg::TankGame::onLocalInput(){
     if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)){
         Projectile p;
         p.sprite.setTexture(player1.projectileFrame.tex);
-        //p.sprite.scale(0.5,0.5);
+        p.sprite.scale(0.5,0.5);
         p.sprite.setOrigin(16,16);
         p.position = player1.turretSprite.getPosition();
-
         //correct to find tip of cannon
-        
-
-        
         p.velocity.x =  15 * (float)cos(player1.turretAngle / (180/3.14156));
-        p.velocity.y =  15 * (float)sin(player1.turretAngle / (180/3.14156));
-        
+        p.velocity.y =  15 * (float)sin(player1.turretAngle / (180/3.14156));        
         p.position.x += p.velocity.x;
         p.position.y += p.velocity.y;
         p.sprite.setPosition(p.position);
@@ -279,7 +301,7 @@ void sg::TankGame::onLoop(sf::Time & frameTime){
     player2.turretSprite.setPosition(player2.position);//move(player2.velocity.x*20*frameTime.asSeconds(),player2.velocity.y*20*frameTime.asSeconds());
 
 
-    //Projectiles 
+    //Projectiles - position and orient player 1 projectiles
     std::vector<Projectile>::iterator proj = player1.projectiles.begin();
     while (proj != player1.projectiles.end()){
         proj->sprite.move(proj->velocity.x*20*frameTime.asSeconds(),proj->velocity.y*20*frameTime.asSeconds());
@@ -290,6 +312,15 @@ void sg::TankGame::onLoop(sf::Time & frameTime){
             cout << "Smlap" << endl;
         }else
             proj++;
+    }
+
+    //Projectiles - position and orient player 2 projectiles.
+    proj = player2.projectiles.begin();
+    while (proj != player2.projectiles.end()){
+        proj->sprite.move(proj->velocity.x*20*frameTime.asSeconds(),proj->velocity.y*20*frameTime.asSeconds());
+        proj->position = proj->sprite.getPosition();
+
+        proj++;
     }
 
     //View follows player 1
@@ -319,9 +350,15 @@ void sg::TankGame::onRender(){
     window.draw(player1.turretSprite);
     window.draw(player2.turretSprite);
 
+    //Draw Player 1 projectiles
     std::vector<Projectile>::iterator proj = player1.projectiles.begin();
     for(;proj != player1.projectiles.end();proj++){
-        //proj->sprite.setTexture(player1.projectileFrame.tex)
+        window.draw(proj->sprite);
+    }
+
+    //Draw player 2 projectiles
+    proj = player2.projectiles.begin();
+    for(;proj != player2.projectiles.end();proj++){
         window.draw(proj->sprite);
     }
 

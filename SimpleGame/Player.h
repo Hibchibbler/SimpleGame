@@ -1,8 +1,9 @@
 /**********************************************************************************
 Tank Game
 Player.h
-Daniel Ferguson, Eddie Stranberg
+
 Copyright 2012
+Daniel Ferguson, Eddie Stranberg
 **********************************************************************************/
 
 #ifndef Player_h_
@@ -22,6 +23,7 @@ namespace sg
     class Projectile
     {
     public:
+        sf::Uint32 id;
         sf::Vector2f position;
         sf::Vector2f velocity;
         sf::Sprite sprite;
@@ -41,6 +43,7 @@ namespace sg
             mass = 5.0f;
             frictionCoefficient = 0.5f;
             turnVelocity = 0.0f;
+            projectileCount = 0;
         }
         std::string name;
 
@@ -54,7 +57,7 @@ namespace sg
 
         sf::Vector2f position;
         sf::Vector2f velocity;
-
+        sf::Uint32 projectileCount;
         float throttle;
         float bodyAngle;
         float turretAngle;

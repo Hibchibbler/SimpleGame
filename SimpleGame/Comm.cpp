@@ -1,8 +1,9 @@
 /**********************************************************************************
 Tank Game
 Comm.cpp
-Daniel Ferguson, Eddie Stranberg
+
 Copyright 2012
+Daniel Ferguson, Eddie Stranberg
 **********************************************************************************/
 
 #include "Comm.h"

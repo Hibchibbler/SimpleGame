@@ -1,8 +1,9 @@
 /**********************************************************************************
 Tank Game
 Floor.h
-Daniel Ferguson, Eddie Stranberg
+
 Copyright 2012
+Daniel Ferguson, Eddie Stranberg
 **********************************************************************************/
 
 #ifndef Floor_h_

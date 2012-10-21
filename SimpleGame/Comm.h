@@ -1,8 +1,9 @@
 /**********************************************************************************
 Tank Game
 Comm.h
-Daniel Ferguson, Eddie Stranberg
+
 Copyright 2012
+Daniel Ferguson, Eddie Stranberg
 **********************************************************************************/
 
 #ifndef Comm_h_

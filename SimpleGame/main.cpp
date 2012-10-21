@@ -1,8 +1,9 @@
 /**********************************************************************************
 Tank Game
 main.cpp
-Daniel Ferguson, Eddie Stranberg
+
 Copyright 2012
+Daniel Ferguson, Eddie Stranberg
 **********************************************************************************/
 
 #include "TankGame.h"
@@ -26,6 +27,8 @@ int main(int argc, char **argv)
     while (tankGame.window.isOpen()){
 
         // Handle Local Events
+        //go through all currently pending events from the window subsystem.
+        //close, resize, mousemove(which we use to orient the turret)
         sf::Event windowEvent;
         while (tankGame.window.pollEvent(windowEvent)){
             if (!tankGame.onLocalEvent(windowEvent)){
@@ -34,6 +37,7 @@ int main(int argc, char **argv)
         }
 
         //Handle  Comm Events
+        //
         sg::CommPacket packet;
         while (tankGame.comm.Receive(packet)){
             tankGame.onRemoteEvent(packet);
@@ -56,7 +60,6 @@ int main(int argc, char **argv)
         tankGame.onRender();
 
         //keep this thread from hogging cpu
-        //don't feel like heating up my cpu while testing..
         sf::sleep(sf::milliseconds(30));
     }
 

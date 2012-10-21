@@ -1,8 +1,9 @@
 /**********************************************************************************
 Tank Game
 TankGame.h
-Daniel Ferguson, Eddie Stranberg
+
 Copyright 2012
+Daniel Ferguson, Eddie Stranberg
 **********************************************************************************/
 
 #ifndef TankGame_h_
@@ -11,6 +12,7 @@ Copyright 2012
 #include "Comm.h"
 #include "Player.h"
 #include "Floor.h"
+#include "HUD.h"
 
 #include <iostream>
 using std::cout;
@@ -23,19 +25,29 @@ namespace sg
         CONNECTED
     };
 
+
+
     class TankGame
     {
     public:
-        TankGame() : window(sf::VideoMode(800, 600, 32), "Tank Game - v0.1") {
+        
+
+        TankGame() : window(sf::VideoMode(800, 600, 32), "Tank Game - v0.1")
+        {
             connectionState = NOT_CONNECTED;
             gameDone = false;
             aniIndex=0;
             sf::View newView(sf::Vector2f(0.0f,0.0f),sf::Vector2f(400.0f, 300.0f));
             window.setView(newView);
             gameWindowHasFocus = true;
-
         }
 
+        enum GameDataType{
+            State,
+            HitConfirm
+        };
+
+        void sendHitConfirm(sf::Uint32 pid);
         void sendState();
 
         void onInit();
@@ -46,12 +58,8 @@ namespace sg
         void onRender();
         void onCleanup();
 
-        //These are to be drawn to the screen as stats
-        sf::Font gameFont;
-        sf::Text player1Health;
-        sf::Text player1Position;
-        sf::Text player1Velocity;
-        sf::Text player2Health;
+        HUD hud;
+        
 
 
         ConnectionState connectionState;

@@ -20,12 +20,13 @@ Daniel Ferguson, Eddie Stranberg
     //Load floor
     floor.Load();
 
-    //Load the one projectile we have..
+
+    
+    //Load bitmaps for player 1(Local)
+    //Load the projectile imagery
     player1.projectileFrame.image.loadFromFile("projectile.png");
     player1.projectileFrame.image.createMaskFromColor(sf::Color::Cyan,0);
     player1.projectileFrame.tex.loadFromImage(player1.projectileFrame.image);
-    
-    // Load bitmaps for player 1(Local)
     player1.bodyFrames.reserve(2);
 
     player1.bodyFrames.push_back(Frame());
@@ -51,12 +52,11 @@ Daniel Ferguson, Eddie Stranberg
     player1.turretSprite.scale(0.6f,0.6f);
 
 
-
+    //Load bitmaps for player 2(Remote
     player2.projectileFrame.image.loadFromFile("projectile.png");
     player2.projectileFrame.image.createMaskFromColor(sf::Color::Cyan,0);
     player2.projectileFrame.tex.loadFromImage(player2.projectileFrame.image);
 
-    //Load bitmaps for player 2(Remote
     player2.bodyFrames.reserve(2);
 
     player2.bodyFrames.push_back(Frame());
@@ -113,6 +113,7 @@ void sg::TankGame::onRemoteEvent(sg::CommPacket & packet){
         packet.packet >> gameDataType;
         
         if (gameDataType == sg::TankGame::State){
+            //Recieved a packet containing other players' state
             packet.packet >> player2.bodyAngle;
             packet.packet >> player2.turretAngle;
             packet.packet >> player2.health;
@@ -120,6 +121,7 @@ void sg::TankGame::onRemoteEvent(sg::CommPacket & packet){
             packet.packet >> player2.position.y;
             packet.packet >> numProjectiles;
             player2.projectiles.clear();
+            //Create projectile sprites for each projectile the other player reports.
             for (int y = 0;y < numProjectiles;y++){
                 Projectile p;
                 packet.packet >> p.position.x;
@@ -130,27 +132,11 @@ void sg::TankGame::onRemoteEvent(sg::CommPacket & packet){
                 p.sprite.setTexture(player2.projectileFrame.tex);
                 p.sprite.scale(0.5,0.5);
                 p.sprite.setOrigin(8,8);
-
-                //p.position.x += p.velocity.x;
-                //p.position.y += p.velocity.y;
                 p.sprite.setPosition(p.position);
-
                 player2.projectiles.push_back(p);
             }
         }else if (gameDataType == sg::TankGame::HitConfirm){
-            sf::Uint32 pid;
-            packet.packet >> pid;
-            //remove inflight projectile belonging to player 1, with id of pid
-            //because a Hit Confirm tells us our projectiles are hitting. and it tells us the pid.
-            std::vector<Projectile>::iterator proj = player1.projectiles.begin();
-            for (;proj != player1.projectiles.end();proj++){
-                if (proj->id == pid){
-                    player1.projectiles.erase(proj);
-                    break;
-                }
-            }
 
-            player2.health--;
         }
         //cout << "Rx'd, player2, " << packet.connectionId << ", " << player2.bodyAngle << ", " << player2.turretAngle << ", " << player2.velocity.x << ", " << player2.velocity.y << endl;
         break;
@@ -376,17 +362,17 @@ void sg::TankGame::onLoop(sf::Time & frameTime){
         //remove projectiles whose position is beyond these extremes
         //this will automatically propagate to player 2, so, player2 doesn't need this treatment locally.
         if (proj->position.x > 500 || proj->position.y > 500  ||
-            proj->position.x < -500 || proj->position.y < -500  ){            
-            //Projectile hit the farside boundary
+            proj->position.x < -500 || proj->position.y < -500  ){
             proj = player1.projectiles.erase(proj);
-            cout << "Smlap" << endl;
-        }else if (proj->position.x < player2.position.x+15 &&
-            proj->position.x > player2.position.x-15 &&
-            proj->position.y < player2.position.y+15 &&
-            proj->position.y > player2.position.y-15 ){
-            //Projectile his player2
+            //cout << "Smlap" << endl;
+        }
+        //remove projectiles that hit other player
+        else if (proj->position.x < player2.position.x+15 &&
+                 proj->position.x > player2.position.x-15 &&
+                 proj->position.y < player2.position.y+15 &&
+                 proj->position.y > player2.position.y-15 ){
             proj = player1.projectiles.erase(proj);
-            cout << "Smash" << endl;
+            //cout << "Smash" << endl;
         }else
             proj++;
     }
@@ -395,12 +381,12 @@ void sg::TankGame::onLoop(sf::Time & frameTime){
     proj = player2.projectiles.begin();
     while (proj != player2.projectiles.end()){
         //Check if player 2 projectiles are hitting player1
-        if (proj->position.x < player1.position.x+15 &&
-            proj->position.x > player1.position.x-15 &&
-            proj->position.y < player1.position.y+15 &&
-            proj->position.y > player1.position.y-15 ){
+        if (proj->position.x < player1.position.x+25 &&
+            proj->position.x > player1.position.x-25 &&
+            proj->position.y < player1.position.y+25 &&
+            proj->position.y > player1.position.y-25 ){
             player1.health--;
-            sendHitConfirm(proj->id);
+            //sendHitConfirm(proj->id);
             cout << "Ouch" << endl;
             //restate the hud Health 
             hud.setHealth(player1.health);
@@ -413,26 +399,32 @@ void sg::TankGame::onLoop(sf::Time & frameTime){
     }
 
     //Position all the HUD stuff.
+    hud.dashSprite.setPosition(player1.bodySprite.getPosition());
+    hud.dashSprite.move(-200,+80);
+    sf::Vector2f dashPos = hud.dashSprite.getPosition();
+
+
     hud.setHealth(player1.health);
     hud.health.setPosition(player1.bodySprite.getPosition());
-    hud.health.move(-200,-150);
+    hud.health.move(-200,+80);
 
     hud.setPos(player1.position);
     hud.position.setPosition(player1.bodySprite.getPosition());
-    hud.position.move(-200,-140);
+    hud.position.move(-200,+90);
 
     hud.setVelocity(player1.velocity);
     hud.velocity.setPosition(player1.bodySprite.getPosition());
-    hud.velocity.move(-200,-130);
+    hud.velocity.move(-200,+100);
 
     hud.setAngles(player1.bodyAngle,player1.turretAngle);
     hud.angles.setPosition(player1.bodySprite.getPosition());
-    hud.angles.move(-200,-120);
+    hud.angles.move(-200,+120);
 
     hud.setHealth2(player2.health);
     hud.health2.setPosition(player1.bodySprite.getPosition());
-    hud.health2.move(+150,-150);//Angles is a two liner..
+    hud.health2.move(-30,130);//Angles is a two liner..
 
+    
 
     //Send player 1 state to remote client
     //only every 100Hz
@@ -477,6 +469,7 @@ void sg::TankGame::onRender(){
     }
 
     //Draw all the HUD stuff
+    window.draw(hud.dashSprite);
     window.draw(hud.health);
     window.draw(hud.velocity);
     window.draw(hud.position);

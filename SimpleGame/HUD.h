@@ -21,32 +21,37 @@ public:
     ~HUD(){}
 
     void load(){
+        hudPosition.x = 0;
+        hudPosition.y = 0;
+        
         //find some ttf somewhere on your system, and modify the loadFromFile line accordingly.
         //Side Note: fpgas are so rad. have to come up with a project for those.
         gameFont.loadFromFile("C:\\Xilinx\\13.2\\ISE_DS\\PlanAhead\\tps\\win64\\jre\\lib\\fonts\\LucidaBrightDemiBold.ttf");
 
-        health.setPosition(5,5);
+        dashImage.loadFromFile("DashBoard.png");
+        dashImage.createMaskFromColor(sf::Color::Cyan,0);
+        dashTexture.loadFromImage(dashImage);
+
+        dashSprite.setTexture(dashTexture);
+        dashSprite.scale(0.5,00.5);
+        
         health.setFont(gameFont);
         health.scale(0.25,0.25);
 
-        position.setPosition(5,20);
         position.setFont(gameFont);
         position.scale(0.25,0.25);
 
-        velocity.setPosition(5,35);
         velocity.setFont(gameFont);
         velocity.scale(0.25,0.25);
 
-        angles.setPosition(5, 50);
         angles.setFont(gameFont);
         angles.scale(0.25,0.25);
 
-        health2.setPosition(5,65);
         health2.setFont(gameFont);
         health2.scale(0.25,0.25);
 
-        hudPosition.x = 0;
-        hudPosition.y = 0;
+        
+
 
         //std::stringstream ss;
         //ss << "Health: " << player1.health;
@@ -55,25 +60,25 @@ public:
 
     void setHealth(int h){ 
         std::stringstream ss;
-        ss << "Health: " << h;
+        ss << "Your Health: " << h;
         health.setString(ss.str());
     }
 
     void setHealth2(int h){ 
         std::stringstream ss;
-        ss << "Health2: " << h;
+        ss << "Their Health: " << h;
         health2.setString(ss.str());
     }
 
     void setVelocity(sf::Vector2f v){
         std::stringstream ss;
-        ss << "Velocity: " << v.x << ", " << v.y;
+        ss << "vx: " << v.x << ", vy:" << v.y;
         velocity.setString(ss.str());
     }
 
     void setPos(sf::Vector2f p){
         std::stringstream ss;
-        ss << "Position: " << p.x << ", " << p.y;
+        ss << "px: " << p.x << ", py: " << p.y;
         position.setString(ss.str());
     }
 
@@ -92,6 +97,10 @@ public:
     sf::Text position;
     sf::Text velocity;
     sf::Text angles;
+
+    sf::Image dashImage;
+    sf::Texture dashTexture;
+    sf::Sprite dashSprite;
 };
 
 #endif

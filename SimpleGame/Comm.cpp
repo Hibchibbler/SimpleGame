@@ -199,7 +199,9 @@ void sg::Comm::CommLooper(Comm* comm)
                 //Some data is available
                 std::vector<sg::Connection>::iterator i;
                 i = comm->Established.begin();
+                
                 while(i != comm->Established.end()){
+                    bool ok=true;
                     if (comm->EstablishedSelector.isReady(*i->Socket)){
                         //Client Ready to receive
 
@@ -212,7 +214,7 @@ void sg::Comm::CommLooper(Comm* comm)
                             i->RecvMutex->lock();
                             i->RecvQueue.push(RecvPacket.packet);
                             i->RecvMutex->unlock();
-                            i++;
+                            ok=true;
                         }else{
                         
                             if(s == sf::Socket::Disconnected)
@@ -224,11 +226,16 @@ void sg::Comm::CommLooper(Comm* comm)
                             delete i->Socket;
                             delete i->SendMutex;
                             delete i->RecvMutex;
-                            i = comm->Established.erase(i);
+                            //i = comm->Established.erase(i);
+                            ok=false;
                         }
-                    }else{
-                        i++;
                     }
+                    if (ok){
+                        i++;
+                    }else{
+                        i = comm->Established.erase(i);
+                    }
+
                 }
             }
             //Send any pending outgoing data

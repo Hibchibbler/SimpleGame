@@ -53,7 +53,7 @@ Daniel Ferguson, Eddie Stranberg
 
 
     //Load bitmaps for player 2(Remote
-    player2.projectileFrame.image.loadFromFile("projectile.png");
+    player2.projectileFrame.image.loadFromFile("projectile2.png");
     player2.projectileFrame.image.createMaskFromColor(sf::Color::Cyan,0);
     player2.projectileFrame.tex.loadFromImage(player2.projectileFrame.image);
 
@@ -226,7 +226,7 @@ bool sg::TankGame::onLocalInput(){
             player1.turnVelocity  = 3.0;
         float magnitude = sqrt((player1.velocity.x*player1.velocity.x) + (player1.velocity.y*player1.velocity.y));
         player1.bodyAngle = player1.bodyAngle -  (9-magnitude);//(player1.turnVelocity-magnitude);
-        if (player1.bodyAngle >= 360.0f){
+        if (player1.bodyAngle >= 360.0f || player1.bodyAngle <= -360.0f ){
             player1.bodyAngle = 0;//player1.bodyAngle - 360.0f;
         }
     }
@@ -238,7 +238,7 @@ bool sg::TankGame::onLocalInput(){
             player1.turnVelocity  = -3.0;
         float magnitude = sqrt((player1.velocity.x*player1.velocity.x) + (player1.velocity.y*player1.velocity.y));
         player1.bodyAngle = player1.bodyAngle +  (9-magnitude);//(player1.turnVelocity-magnitude);
-        if (player1.bodyAngle >= 360.0f){
+        if (player1.bodyAngle >= 360.0f || player1.bodyAngle <= -360.0f ){
             player1.bodyAngle = 0;//player1.bodyAngle - 360.0f;
         }
     }
@@ -386,7 +386,6 @@ void sg::TankGame::onLoop(sf::Time & frameTime){
             proj->position.y < player1.position.y+25 &&
             proj->position.y > player1.position.y-25 ){
             player1.health--;
-            //sendHitConfirm(proj->id);
             cout << "Ouch" << endl;
             //restate the hud Health 
             hud.setHealth(player1.health);
@@ -414,15 +413,15 @@ void sg::TankGame::onLoop(sf::Time & frameTime){
 
     hud.setVelocity(player1.velocity);
     hud.velocity.setPosition(player1.bodySprite.getPosition());
-    hud.velocity.move(-200,+100);
+    hud.velocity.move(-200,+110);
 
     hud.setAngles(player1.bodyAngle,player1.turretAngle);
     hud.angles.setPosition(player1.bodySprite.getPosition());
-    hud.angles.move(-200,+120);
+    hud.angles.move(-200,+130);
 
     hud.setHealth2(player2.health);
     hud.health2.setPosition(player1.bodySprite.getPosition());
-    hud.health2.move(-30,130);//Angles is a two liner..
+    hud.health2.move(-30,140);//Angles is a two liner..
 
     
 

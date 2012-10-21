@@ -11,6 +11,7 @@ Daniel Ferguson, Eddie Stranberg
 
 #include <SFML/Graphics.hpp>
 #include <sstream>
+#include <iomanip>
 
 class HUD
 {
@@ -25,9 +26,8 @@ public:
         hudPosition.y = 0;
         
         //find some ttf somewhere on your system, and modify the loadFromFile line accordingly.
-        //Side Note: fpgas are so rad. have to come up with a project for those.
-        gameFont.loadFromFile("C:\\Xilinx\\13.2\\ISE_DS\\PlanAhead\\tps\\win64\\jre\\lib\\fonts\\LucidaBrightDemiBold.ttf");
-
+        //gameFont.loadFromFile("C:\\Users\\hibchibbler\\Downloads\\segment14\\hdad-segment14-1.002\\Segment14.otf");
+        gameFont.loadFromFile("ds-digi.ttf");
         dashImage.loadFromFile("DashBoard.png");
         dashImage.createMaskFromColor(sf::Color::Cyan,0);
         dashTexture.loadFromImage(dashImage);
@@ -36,56 +36,68 @@ public:
         dashSprite.scale(0.5,00.5);
         
         health.setFont(gameFont);
+        health.setColor(sf::Color::Green);
         health.scale(0.25,0.25);
 
         position.setFont(gameFont);
+        position.setColor(sf::Color::Green);
         position.scale(0.25,0.25);
 
         velocity.setFont(gameFont);
+        velocity.setColor(sf::Color::Green);
         velocity.scale(0.25,0.25);
 
         angles.setFont(gameFont);
+        angles.setColor(sf::Color::Green);
         angles.scale(0.25,0.25);
 
         health2.setFont(gameFont);
+        health2.setColor(sf::Color::Green);
         health2.scale(0.25,0.25);
-
-        
-
-
-        //std::stringstream ss;
-        //ss << "Health: " << player1.health;
-        //health.setString(ss.str());
     }
 
     void setHealth(int h){ 
+        if (h <= 0)
+            health.setColor(sf::Color::Red);
+        else
+            health.setColor(sf::Color::Green);
+
         std::stringstream ss;
-        ss << "Your Health: " << h;
+        ss << "Your Health: " << std::setfill(' ') << std::setw(3)  << h;
         health.setString(ss.str());
     }
 
     void setHealth2(int h){ 
+        if (h <= 0)
+            health2.setColor(sf::Color::Red);
+        else
+            health2.setColor(sf::Color::Green);
+
         std::stringstream ss;
-        ss << "Their Health: " << h;
+        ss << "Opponent Health: " << std::setfill(' ') << std::setw(3) << h;
         health2.setString(ss.str());
     }
 
     void setVelocity(sf::Vector2f v){
         std::stringstream ss;
-        ss << "vx: " << v.x << ", vy:" << v.y;
+        //ss << "vx: " << std::setfill(' ') << std::setw(4) << std::setprecision(2) << v.x << " vy: " << std::setfill(' ') << std::setw(4) << std::setprecision(2) << v.y;
+        ss << std::fixed << "vx: " << std::setprecision(1) << v.x << std::endl;
+        ss << "vy: " << std::setprecision(1) << v.y;
         velocity.setString(ss.str());
     }
 
     void setPos(sf::Vector2f p){
         std::stringstream ss;
-        ss << "px: " << p.x << ", py: " << p.y;
+        //ss << "px: "<< std::setfill(' ') << std::setw(4)  << p.x << " py: " << std::setfill(' ') << std::setw(4) <<  p.y;
+        ss << std::fixed << "PX: " << std::setprecision(1) << p.x << std::endl;
+        ss << "PY: " << std::setprecision(1) << p.y;
         position.setString(ss.str());
     }
 
     void setAngles(float bodyAngle, float turretAngle){
         std::stringstream ss;
-        ss << "Body: " << bodyAngle << std::endl;
-        ss << "Turret: " << turretAngle;
+        ss << std::fixed << "Body: "<< std::setprecision(1)  << bodyAngle << std::endl;
+        ss << std::fixed << "Turret: "<< std::setprecision(1) << turretAngle;
         angles.setString(ss.str());
     }
 

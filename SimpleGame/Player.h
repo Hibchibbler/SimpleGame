@@ -1,3 +1,10 @@
+/**********************************************************************************
+Tank Game
+Player.h
+Daniel Ferguson, Eddie Stranberg
+Copyright 2012
+**********************************************************************************/
+
 #ifndef Player_h_
 #define Player_h_
 
@@ -30,6 +37,10 @@ namespace sg
             throttle = 0.0f;
             bodyAngle = 0.0f;
             turretAngle = 0.0f;
+            health = 100.0f;
+            mass = 5.0f;
+            frictionCoefficient = 0.5f;
+            turnVelocity = 0.0f;
         }
         std::string name;
 
@@ -47,6 +58,10 @@ namespace sg
         float throttle;
         float bodyAngle;
         float turretAngle;
+        float turnVelocity;
+        float mass;
+        float frictionCoefficient;
+        float health;
     };
 };
 

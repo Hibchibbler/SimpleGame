@@ -1,3 +1,10 @@
+/**********************************************************************************
+Tank Game
+main.cpp
+Daniel Ferguson, Eddie Stranberg
+Copyright 2012
+**********************************************************************************/
+
 #include "TankGame.h"
 
 int main(int argc, char **argv)

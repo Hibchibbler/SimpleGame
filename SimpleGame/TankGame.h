@@ -1,3 +1,10 @@
+/**********************************************************************************
+Tank Game
+TankGame.h
+Daniel Ferguson, Eddie Stranberg
+Copyright 2012
+**********************************************************************************/
+
 #ifndef TankGame_h_
 #define TankGame_h_
 
@@ -39,6 +46,12 @@ namespace sg
         void onRender();
         void onCleanup();
 
+        //These are to be drawn to the screen as stats
+        sf::Font gameFont;
+        sf::Text player1Health;
+        sf::Text player1Position;
+        sf::Text player1Velocity;
+        sf::Text player2Health;
 
 
         ConnectionState connectionState;

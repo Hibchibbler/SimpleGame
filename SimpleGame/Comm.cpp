@@ -1,3 +1,10 @@
+/**********************************************************************************
+Tank Game
+Comm.cpp
+Daniel Ferguson, Eddie Stranberg
+Copyright 2012
+**********************************************************************************/
+
 #include "Comm.h"
 #include <iostream>
 
@@ -154,7 +161,7 @@ void sg::Comm::CommLooper(Comm* comm)
                     i->SendMutex = new sf::Mutex();
                     i->RecvMutex = new sf::Mutex();
                 }
-                sf::Socket::Status s = i->Socket->connect(sf::IpAddress("127.0.0.1"), 8280);
+                sf::Socket::Status s = i->Socket->connect(sf::IpAddress("127.0.0.1"), 8280);//"192.168.2.110"
                 if (s == sf::Socket::Done){
                 
                     i->connectionId = comm->TotalConnectCount;
@@ -227,7 +234,8 @@ void sg::Comm::CommLooper(Comm* comm)
             
 
             std::vector<sg::Connection>::iterator connection =  comm->Established.begin();
-            for (;connection != comm->Established.end();connection++){
+            for (;connection != comm->Established.end();){
+                bool ok = true;
                 connection->SendMutex->lock();
                 while(!connection->SendQueue.empty()){
                     sf::Packet packet = connection->SendQueue.front();
@@ -235,6 +243,7 @@ void sg::Comm::CommLooper(Comm* comm)
                     sf::Socket::Status s = connection->Socket->send(packet);
                     if (s == sf::Socket::Done){
                         comm->SendSystem(sg::CommPacket::Sent, connection->connectionId, std::string("Sent"));
+                        ok = true;
                     }else{
                         if (s == sf::Socket::Disconnected)
                             comm->SendSystem(sg::CommPacket::Disconnect, connection->connectionId, std::string("Client disconnected"));
@@ -246,10 +255,16 @@ void sg::Comm::CommLooper(Comm* comm)
                         delete connection->Socket;
                         delete connection->SendMutex;
                         delete connection->RecvMutex;
-                        connection = comm->Established.erase(connection);
+                        ok = false;
                     }
                 }
                 connection->SendMutex->unlock();
+                if (ok)
+                    connection++;
+                else{
+                    connection = comm->Established.erase(connection);
+                }
+                
             }
         }comm->EstablishedMutex.unlock();
             
@@ -268,13 +283,6 @@ void sg::Comm::SendSystem(sg::CommPacket::CommPacketType msgId, sf::Uint32 conne
     SystemMutex.lock();
     SystemPackets.push(packet);
     SystemMutex.unlock();
-    /*std::vector<sg::Connection>::iterator i = Established.begin();
-    for(;i != Established.end();i++){
-        if (i->connectionId == connectionId){
-            i->RecvMutex->lock();
-            i->RecvQueue.push(packet);
-            i->RecvMutex->unlock();
-            break;
-        }
-    }*/
 }
+
+

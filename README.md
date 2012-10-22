@@ -53,11 +53,14 @@ The players constantly use sg::CommPacket::Data packets to transmit their positi
   
 The sg::CommPacket::Error packet type indicates an error occurred in the Comm object.  
 It is likely a failed outgoing connection, or the listener didn't like something you gave it.
-
-
   
 Player  
 ------
 Player contains all state that is specific to a player. Player also contains the image data used drawing  
 the tank to the display. TankGame is composed of two instances of this class, among other things.  
   
+  
+Important links  
+===============  
+http://www.dafont.com/digital-7.font  
+http://daringfireball.net/projects/markdown/dingus

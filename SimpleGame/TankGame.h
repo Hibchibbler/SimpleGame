@@ -32,7 +32,7 @@ namespace sg
     public:
         
 
-        TankGame() : window(sf::VideoMode(800, 600, 32), "Tank Game - v0.1")
+        TankGame(int width, int height) : window(sf::VideoMode(width, height, 32), "Tank Game - v0.1")
         {
             connectionState = NOT_CONNECTED;
             gameDone = false;
@@ -40,6 +40,7 @@ namespace sg
             sf::View newView(sf::Vector2f(0.0f,0.0f),sf::Vector2f(400.0f, 300.0f));
             window.setView(newView);
             gameWindowHasFocus = true;
+            displayDimensions = sf::Vector2f(width, height);
         }
 
         enum GameDataType{
@@ -58,6 +59,7 @@ namespace sg
         void onRender();
         void onCleanup();
 
+        sf::Vector2f displayDimensions;
         HUD hud;
         
 

@@ -283,15 +283,27 @@ bool sg::TankGame::onLocalEvent(sf::Event & event){
             gameWindowHasFocus = true;
             break;
         case sf::Event::MouseWheelMoved:{
+
+            //This assumes that if the display window is not square, then it is wider than it is high.
+            displayDimensions.x += 20*event.mouseWheel.delta*(displayDimensions.x/displayDimensions.y);
+            displayDimensions.y += 20*event.mouseWheel.delta;
+
+            break;
+        }case sf::Event::Resized:{
+            displayDimensions.x  = event.size.width;
+            displayDimensions.y  = event.size.height;
+            //float min = (displayDimensions.x <= displayDimensions.y) ? displayDimensions.x : displayDimensions.y;
+            //displayDimensions.x = displayDimensions.y = min;
             break;
         }case sf::Event::MouseMoved:{
             float dx,dy;
             sf::Vector2f centerOfTurretWorld;
             sf::Vector2i centerOfMouseCursorScreen(event.mouseMove.x,event.mouseMove.y);
             sf::Vector2f centerOfMouseCursorWorld;
-
+            //cout << event.mouseMove.x << ", " << event.mouseMove.y << endl;
             //Find turrent angle based on vector from tank origin to mouse.
             centerOfTurretWorld = player1.turretSprite.getPosition();
+            //window.setView(sf::View(sf::FloatRect(0,0,displayDimensions.x, displayDimensions.y)));
             centerOfMouseCursorWorld = window.convertCoords(centerOfMouseCursorScreen);
             dx = centerOfMouseCursorWorld.x - centerOfTurretWorld.x;
             dy = centerOfMouseCursorWorld.y - centerOfTurretWorld.y;
@@ -396,33 +408,30 @@ void sg::TankGame::onLoop(sf::Time & frameTime){
             proj++;
         }
     }
+    
 
     //Position all the HUD stuff.
-    hud.dashSprite.setPosition(player1.bodySprite.getPosition());
-    hud.dashSprite.move(-200,+80);
+    //we 
+    hud.dashSprite.setPosition(0,0);
     sf::Vector2f dashPos = hud.dashSprite.getPosition();
 
-
     hud.setHealth(player1.health);
-    hud.health.setPosition(player1.bodySprite.getPosition());
-    hud.health.move(-200,+80);
-
-    hud.setPos(player1.position);
-    hud.position.setPosition(player1.bodySprite.getPosition());
-    hud.position.move(-200,+90);
-
-    hud.setVelocity(player1.velocity);
-    hud.velocity.setPosition(player1.bodySprite.getPosition());
-    hud.velocity.move(-200,+110);
+    hud.health.setPosition(0,0);
 
     hud.setAngles(player1.bodyAngle,player1.turretAngle);
-    hud.angles.setPosition(player1.bodySprite.getPosition());
-    hud.angles.move(-200,+130);
+    hud.angles.setPosition(0,20);
+
+
+    hud.setPos(player1.position);
+    hud.position.setPosition(0,60);
+    
+
+    hud.setVelocity(player1.velocity);
+    hud.velocity.setPosition(0,100);
+    
 
     hud.setHealth2(player2.health);
-    hud.health2.setPosition(player1.bodySprite.getPosition());
-    hud.health2.move(-30,140);//Angles is a two liner..
-
+    hud.health2.setPosition(300,120);
     
 
     //Send player 1 state to remote client
@@ -432,14 +441,15 @@ void sg::TankGame::onLoop(sf::Time & frameTime){
         stateClock.restart();
     }
 
-    //View follows player 1
-    sf::View newView(player1.bodySprite.getPosition(),sf::Vector2f(400.0f, 300.0f));
-    window.setView(newView);
+
 }
 void sg::TankGame::onRender(){
     // Clear the screen (fill it with black color)
     window.clear();
-
+    
+    //float min = (displayDimensions.x <= displayDimensions.y) ? displayDimensions.x : displayDimensions.y;
+    window.setView(sf::View(player1.bodySprite.getPosition(),sf::Vector2f(displayDimensions.x, displayDimensions.y)));
+    
     //Draw Floor
     for (int h = 0; h < floor.height;h++){
         for (int w = 0;w < floor.width;w++){
@@ -466,6 +476,11 @@ void sg::TankGame::onRender(){
     for(;proj != player2.projectiles.end();proj++){
         window.draw(proj->sprite);
     }
+    
+    //Set View for drawing the HUD.
+    //we use a different view because we don't want the hud to scale when zooming in and out.    
+    //window.setView(sf::View(sf::FloatRect(0,-((float)window.getSize().y)+144,window.getSize().x,window.getSize().y)));
+    
 
     //Draw all the HUD stuff
     window.draw(hud.dashSprite);
@@ -475,9 +490,13 @@ void sg::TankGame::onRender(){
     window.draw(hud.angles);
     window.draw(hud.health2);
 
+    //Reset view to the state before we drew the hud
+    window.setView(sf::View(player1.bodySprite.getPosition(),sf::Vector2f(displayDimensions.x, displayDimensions.y)));
 
     //Finally, Display window contents on screen
     window.display();
+
+
 }
 void sg::TankGame::onCleanup(){
 

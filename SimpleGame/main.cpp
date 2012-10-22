@@ -12,7 +12,7 @@ int main(int argc, char **argv)
 {
 
     //Instantiate the game state
-    sg::TankGame tankGame;
+    sg::TankGame tankGame(1024, 600);
     tankGame.onInit();
     
     //House keeping variables

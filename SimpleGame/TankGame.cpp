@@ -18,7 +18,7 @@ Daniel Ferguson, Eddie Stranberg
     hud.setPos(sf::Vector2f(0,0));
 
     //Load floor
-    floor.Load();
+    floor.Load(dispDim.x, dispDim.y);
 
 
     
@@ -82,29 +82,30 @@ Daniel Ferguson, Eddie Stranberg
     player2.turretSprite.scale(0.6f,0.6f);
     
 }
-void sg::TankGame::onRemoteEvent(sg::CommPacket & packet){
+void sg::TankGame::onRemoteEvent(sg::CommEvent & packet){
     //some GamePackets have an ID that is indicative of the socket on
     //to which the packet pertains.
     sf::Uint32 packetType;
     packet.packet >> packetType;
     switch (packetType){
-    case sg::CommPacket::Acceptance:{
+    case sg::CommEvent::Acceptance:{
         sf::Uint32 id;
         std::string msg;
         packet.packet >> id;
         packet.packet >> msg;
         cout << "Acceptance: " << msg << endl;
         connectionId = id;
-        connectionState = CONNECTED;
+        connected = true;
         break;
-    }case sg::CommPacket::Disconnect:{
+    }case sg::CommEvent::Disconnect:{
         sf::Uint32 id;
         std::string msg;
         packet.packet >> id;
         packet.packet >> msg;
+        connected = false;
         cout << "Disconnect: " << msg << endl;
         break;
-    }case sg::CommPacket::Data:{
+    }case sg::CommEvent::Data:{
         //Get other player's tank  position metrics
         // We call the other player, player2
         int numProjectiles = 0;
@@ -135,19 +136,20 @@ void sg::TankGame::onRemoteEvent(sg::CommPacket & packet){
                 p.sprite.setPosition(p.position);
                 player2.projectiles.push_back(p);
             }
-        }else if (gameDataType == sg::TankGame::HitConfirm){
-
+        }else{
+            //This is where you'd add input handling for additional game data types
         }
         //cout << "Rx'd, player2, " << packet.connectionId << ", " << player2.bodyAngle << ", " << player2.turretAngle << ", " << player2.velocity.x << ", " << player2.velocity.y << endl;
         break;
-    }case sg::CommPacket::Sent:{
+    }case sg::CommEvent::Sent:{
         //cout << "Sent" << endl;
         break;
-    }case sg::CommPacket::Error:{
+    }case sg::CommEvent::Error:{
         sf::Uint32 id;
         std::string msg;
         packet.packet >> id;
         packet.packet >> msg;
+        connected = false;
         cout << "Error: " << msg << endl;
         break;
     }
@@ -155,27 +157,14 @@ void sg::TankGame::onRemoteEvent(sg::CommPacket & packet){
         break;
     }
 }
-void sg::TankGame::sendHitConfirm(sf::Uint32 pid)
-{
-    sg::CommPacket packet;
-    packet.connectionId = connectionId;//This id is indicative of the socket 
-                                //which this GamePacket will be sent on
-    packet.packet << (sf::Uint32)sg::CommPacket::Data;
-    packet.packet << (sf::Uint32)sg::TankGame::HitConfirm;
-    packet.packet << pid;
 
-    if (connectionState){
-        comm.Send(packet);
-        //cout << "Tx'd, player1, " << packet.connectionId << ", " << player1.bodyAngle << ", " << player1.turretAngle << ", " << player1.velocity.x << ", " << player1.velocity.y << endl;
-    }
-}
 
 void sg::TankGame::sendState()
 {
-    sg::CommPacket packet;
+    sg::CommEvent packet;
     packet.connectionId = connectionId;//This id is indicative of the socket 
                                 //which this GamePacket will be sent on
-    packet.packet << (sf::Uint32)sg::CommPacket::Data;
+    packet.packet << (sf::Uint32)sg::CommEvent::Data;
     packet.packet << (sf::Uint32)sg::TankGame::State;
     packet.packet << player1.bodyAngle;
     packet.packet << player1.turretAngle;
@@ -191,7 +180,7 @@ void sg::TankGame::sendState()
         packet.packet << proj->velocity.y;
         proj++;
     }
-    if (connectionState){
+    if (connected){
         comm.Send(packet);
         //cout << "Tx'd, player1, " << packet.connectionId << ", " << player1.bodyAngle << ", " << player1.turretAngle << ", " << player1.velocity.x << ", " << player1.velocity.y << endl;
     }
@@ -207,8 +196,8 @@ bool sg::TankGame::onLocalInput(){
     //We poll keyboard instead of relying on bios keyboard rate
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)){
         player1.throttle += 1;
-        if (player1.throttle > 8)
-            player1.throttle = 8;
+        if (player1.throttle > 35)
+            player1.throttle = 35;
     }
     
 
@@ -221,11 +210,7 @@ bool sg::TankGame::onLocalInput(){
     
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)){
         //Rotating left
-        player1.turnVelocity += 0.2f;
-        if (player1.turnVelocity  > 3.0)
-            player1.turnVelocity  = 3.0;
-        float magnitude = sqrt((player1.velocity.x*player1.velocity.x) + (player1.velocity.y*player1.velocity.y));
-        player1.bodyAngle = player1.bodyAngle -  (9-magnitude);//(player1.turnVelocity-magnitude);
+        player1.bodyAngle = player1.bodyAngle -  5;
         if (player1.bodyAngle >= 360.0f || player1.bodyAngle <= -360.0f ){
             player1.bodyAngle = 0;//player1.bodyAngle - 360.0f;
         }
@@ -233,11 +218,7 @@ bool sg::TankGame::onLocalInput(){
     
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)){
         //Rotating right
-       player1.turnVelocity -= 0.2f;
-        if (player1.turnVelocity  < -3.0)
-            player1.turnVelocity  = -3.0;
-        float magnitude = sqrt((player1.velocity.x*player1.velocity.x) + (player1.velocity.y*player1.velocity.y));
-        player1.bodyAngle = player1.bodyAngle +  (9-magnitude);//(player1.turnVelocity-magnitude);
+        player1.bodyAngle = player1.bodyAngle +  5;
         if (player1.bodyAngle >= 360.0f || player1.bodyAngle <= -360.0f ){
             player1.bodyAngle = 0;//player1.bodyAngle - 360.0f;
         }
@@ -247,26 +228,28 @@ bool sg::TankGame::onLocalInput(){
     player1.velocity.x =  player1.throttle * (float)cos(player1.bodyAngle / (180/3.14156));
     player1.velocity.y =  player1.throttle * (float)sin(player1.bodyAngle / (180/3.14156));
     
-
-    
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left)){
-        
-        Projectile p;
-        
+        //Create a new projectiles
+        Projectile p;        
         p.id = player1.projectileCount;
         player1.projectileCount++;
 
         p.sprite.setTexture(player1.projectileFrame.tex);
         p.sprite.scale(0.5,0.5);
         p.sprite.setOrigin(16,16);
+        
+        //position projectile on the turret
         p.position = player1.turretSprite.getPosition();
-        //correct to find tip of cannon
+        //set the projectile's velocity, based on the turret angle
         p.velocity.x =  25 * (float)cos(player1.turretAngle / (180/3.14156));
         p.velocity.y =  25 * (float)sin(player1.turretAngle / (180/3.14156));
+        //translate projectile to appear to come from turret tip
         p.position.x += p.velocity.x;
         p.position.y += p.velocity.y;
+
         p.sprite.setPosition(p.position);
-        
+
+        //Add projectile to in-flight list
         player1.projectiles.push_back(p);
         cout << "Bang!" << endl;
     }
@@ -283,30 +266,29 @@ bool sg::TankGame::onLocalEvent(sf::Event & event){
             gameWindowHasFocus = true;
             break;
         case sf::Event::MouseWheelMoved:{
-
-            //This assumes that if the display window is not square, then it is wider than it is high.
-            displayDimensions.x += 20*event.mouseWheel.delta*(displayDimensions.x/displayDimensions.y);
-            displayDimensions.y += 20*event.mouseWheel.delta;
-
+            //Increase the size of the arenaView.
+            //This causes everything drawn to be scaled either bigger or smaller.
+            float addend = event.mouseWheel.delta/15.0f;
+            sf::Vector2f newSize = arenaView.getSize();
+            newSize.x += 20.0f*event.mouseWheel.delta*(dispDim.x/dispDim.y);
+            newSize.y += 20.0f*event.mouseWheel.delta;
+            arenaView.setSize(newSize);
             break;
         }case sf::Event::Resized:{
-            displayDimensions.x  = event.size.width;
-            displayDimensions.y  = event.size.height;
-            //float min = (displayDimensions.x <= displayDimensions.y) ? displayDimensions.x : displayDimensions.y;
-            //displayDimensions.x = displayDimensions.y = min;
+            dispDim.x  = (float)event.size.width;
+            dispDim.y  = (float)event.size.height;
             break;
         }case sf::Event::MouseMoved:{
             float dx,dy;
             sf::Vector2f centerOfTurretWorld;
-            sf::Vector2i centerOfMouseCursorScreen(event.mouseMove.x,event.mouseMove.y);
-            sf::Vector2f centerOfMouseCursorWorld;
-            //cout << event.mouseMove.x << ", " << event.mouseMove.y << endl;
+            sf::Vector2i mouseCursorScreen(event.mouseMove.x,event.mouseMove.y);
+            sf::Vector2f mouseCursorWorld;
+
             //Find turrent angle based on vector from tank origin to mouse.
             centerOfTurretWorld = player1.turretSprite.getPosition();
-            //window.setView(sf::View(sf::FloatRect(0,0,displayDimensions.x, displayDimensions.y)));
-            centerOfMouseCursorWorld = window.convertCoords(centerOfMouseCursorScreen);
-            dx = centerOfMouseCursorWorld.x - centerOfTurretWorld.x;
-            dy = centerOfMouseCursorWorld.y - centerOfTurretWorld.y;
+            mouseCursorWorld = window.convertCoords(mouseCursorScreen);
+            dx = mouseCursorWorld.x - centerOfTurretWorld.x;
+            dy = mouseCursorWorld.y - centerOfTurretWorld.y;
             player1.turretAngle =  (180.0f/3.14156f)*atan2(dy,dx);
 
             break;
@@ -350,8 +332,6 @@ void sg::TankGame::onLoop(sf::Time & frameTime){
     player1.bodySprite.move(player1.velocity.x*20*frameTime.asSeconds(),player1.velocity.y*20*frameTime.asSeconds());
     player1.turretSprite.move(player1.velocity.x*20*frameTime.asSeconds(),player1.velocity.y*20*frameTime.asSeconds());
     player1.position = player1.bodySprite.getPosition();
-    
-    
 
     //Calculate other players tank orientation
     player2.bodySprite.setRotation(0.0f);
@@ -364,7 +344,6 @@ void sg::TankGame::onLoop(sf::Time & frameTime){
     player2.bodySprite.setPosition(player2.position);
     player2.turretSprite.setPosition(player2.position);
 
-
     //Projectiles - position and orient player 1 projectiles
     std::vector<Projectile>::iterator proj = player1.projectiles.begin();
     while (proj != player1.projectiles.end()){
@@ -373,8 +352,8 @@ void sg::TankGame::onLoop(sf::Time & frameTime){
 
         //remove projectiles whose position is beyond these extremes
         //this will automatically propagate to player 2, so, player2 doesn't need this treatment locally.
-        if (proj->position.x > 500 || proj->position.y > 500  ||
-            proj->position.x < -500 || proj->position.y < -500  ){
+        if (proj->position.x > 4000 || proj->position.y > 4000  ||
+            proj->position.x < -4000 || proj->position.y < -4000  ){
             proj = player1.projectiles.erase(proj);
             //cout << "Smlap" << endl;
         }
@@ -411,7 +390,8 @@ void sg::TankGame::onLoop(sf::Time & frameTime){
     
 
     //Position all the HUD stuff.
-    //we 
+    //Everything is relative to the upper left corner
+    // of the dashSprite (currently, a brushed metal thing)
     hud.dashSprite.setPosition(0,0);
     sf::Vector2f dashPos = hud.dashSprite.getPosition();
 
@@ -421,22 +401,19 @@ void sg::TankGame::onLoop(sf::Time & frameTime){
     hud.setAngles(player1.bodyAngle,player1.turretAngle);
     hud.angles.setPosition(0,20);
 
-
     hud.setPos(player1.position);
     hud.position.setPosition(0,60);
-    
 
     hud.setVelocity(player1.velocity);
     hud.velocity.setPosition(0,100);
-    
 
     hud.setHealth2(player2.health);
     hud.health2.setPosition(300,120);
     
 
     //Send player 1 state to remote client
-    //only every 100Hz
-    if (stateClock.getElapsedTime().asMilliseconds() >= 10){
+    //at 50Hz
+    if (stateClock.getElapsedTime().asMilliseconds() >= 20){
         sendState();
         stateClock.restart();
     }
@@ -447,17 +424,16 @@ void sg::TankGame::onRender(){
     // Clear the screen (fill it with black color)
     window.clear();
     
-    //float min = (displayDimensions.x <= displayDimensions.y) ? displayDimensions.x : displayDimensions.y;
-    window.setView(sf::View(player1.bodySprite.getPosition(),sf::Vector2f(displayDimensions.x, displayDimensions.y)));
-    
+    //Center arenaView on current position of player 1
+    arenaView.setCenter(player1.bodySprite.getPosition());
+    window.setView(arenaView);
+
     //Draw Floor
-    for (int h = 0; h < floor.height;h++){
-        for (int w = 0;w < floor.width;w++){
-            sf::Vector2f curPos = floor.spriteTiles[h][w].getPosition();
-            floor.spriteTiles[h][w].setPosition(curPos);
-            window.draw(floor.spriteTiles[h][w]);
-        }
+    std::vector<sf::Sprite>::iterator sprite = floor.mapSprites.begin();
+    for (; sprite != floor.mapSprites.end(); sprite++){
+        window.draw(*sprite);
     }
+
         
     //Draw Tanks
     window.draw(player1.bodySprite);
@@ -479,7 +455,9 @@ void sg::TankGame::onRender(){
     
     //Set View for drawing the HUD.
     //we use a different view because we don't want the hud to scale when zooming in and out.    
-    //window.setView(sf::View(sf::FloatRect(0,-((float)window.getSize().y)+144,window.getSize().x,window.getSize().y)));
+
+    window.setView(hudView);
+
     
 
     //Draw all the HUD stuff
@@ -491,7 +469,8 @@ void sg::TankGame::onRender(){
     window.draw(hud.health2);
 
     //Reset view to the state before we drew the hud
-    window.setView(sf::View(player1.bodySprite.getPosition(),sf::Vector2f(displayDimensions.x, displayDimensions.y)));
+    //window.setView(sf::View(player1.bodySprite.getPosition(),sf::Vector2f(displayDimensions.x, displayDimensions.y)));
+    window.setView(arenaView);
 
     //Finally, Display window contents on screen
     window.display();

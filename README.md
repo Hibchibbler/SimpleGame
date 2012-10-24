@@ -8,6 +8,8 @@ Each player has a dedicated class Player for tracking aformentioned things.
   
 TankGame is designed to be used in a simple game loop that fits nicely in main().  
 If you look at main.cpp, it should be self evident how TankGame is used.
+
+
   
 Comm  
 ----

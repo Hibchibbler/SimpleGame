@@ -11,22 +11,30 @@ namespace TankMapMaker
 {
     public partial class Form1 : Form
     {
-        const int width = 8;
-        const int height = 8;
+        int width = 20;
+        int height = 20;
 
-        int[,] mapData = new int[width, height];
+        int[,] mapData = null;
 
         MapBrush current = null;
         MapBrush zero = new MapBrush("0.png",0);
         MapBrush one = new MapBrush("1.png",1);
         MapBrush two = new MapBrush("2.png",2);
         MapBrush three = new MapBrush("3.png",3);
-        Bitmap map = new Bitmap(width * 16, height * 16);
+        Bitmap map = null;//new Bitmap(width * 16, height * 16);
 
         public Form1()
         {
             InitializeComponent();
         }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            comboBoxCellTypes.SelectedIndex = 0;
+            mapData = new int[width, height];
+            map = new Bitmap(width * 16, height * 16);
+        }
+
 
         void ConvertScreenToWorld(int sx, int sy, ref int wx, ref int wy)
         {
@@ -36,13 +44,6 @@ namespace TankMapMaker
 
         private void panelMap_MouseDown(object sender, MouseEventArgs e)
         {
-            //int wx = 0;
-            //int wy = 0;
-            //ConvertScreenToWorld(e.Location.X, e.Location.Y, ref wx, ref wy);
-            //txtX.Text = wx.ToString();
-            //txtY.Text = wy.ToString();
-            //mapData[wx, wy] = 'a';
-
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {
                 decimal bitmapDimX = 16;
@@ -82,10 +83,6 @@ namespace TankMapMaker
             }
         }
 
-        private void e(object sender, EventArgs e)
-        {
-
-        }
 
         private void panelMap_Paint(object sender, PaintEventArgs e)
         {
@@ -139,23 +136,24 @@ namespace TankMapMaker
                 }
             }
 
-
+            panelMap.Refresh();
         }
 
         private void btnExport_Click(object sender, EventArgs e)
         {
-            System.IO.StreamWriter sw = new System.IO.StreamWriter("export.txt");
-            sw.WriteLine(width);//columns
-            sw.WriteLine(height);//rows
+            System.IO.BinaryWriter bw = new System.IO.BinaryWriter(System.IO.File.Open("export.txt", System.IO.FileMode.Create));
+            
+            
+            bw.Write(width);//columns
+            bw.Write(height);//rows
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
                 {
-                    sw.Write(String.Format("{0}, ",mapData[x,y]));
+                    bw.Write(mapData[x, y]);
                 }
-                sw.WriteLine();
             }
-            sw.Close();
+            bw.Close();
         }
     }
 }

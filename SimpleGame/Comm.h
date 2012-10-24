@@ -15,7 +15,13 @@ Daniel Ferguson, Eddie Stranberg
 
 namespace sg
 {
-    class Connection//TODO rename to Client, or Player or something..
+    //class Connection contains information that is specific to a connection between two clients.
+    // * Queue's for reads and writes.
+    // * Mutexes to synchronize access to the queues.
+    // * The socket used to read and write to the connection
+    // * A unique identifier used to identify this connection. This identifier is only
+    //   unique to an instance of Comm.
+    class Connection
     {
     public:
         Connection(){
@@ -33,11 +39,12 @@ namespace sg
 
     };
 
-
-    class CommPacket
+    //CommEvent is a structure containing
+    // information, pertaining to a particular event, that is passed to the user.
+    class CommEvent
     {
     public:
-        enum CommPacketType{
+        enum CommEventType{
             Acceptance,
             Established,
             Disconnect,
@@ -45,7 +52,7 @@ namespace sg
             Sent,
             Error
         };
-        CommPacket(){
+        CommEvent(){
             connectionId = -1;
         }
         sf::Packet packet;
@@ -59,19 +66,18 @@ namespace sg
     public:
         Comm()
             : 
-        //#pragma(warning disable: 4355);
-        CommLooperThread(sg::Comm::CommLooper,this)
-        {
+        CommLooperThread(sg::Comm::CommLooper,this){
             NotDone = true;
             TotalConnectCount=0;
         }
-        ~Comm(){}
+        ~Comm(){
+        }
         void AddConnection(sg::Connection &client);
         bool StartClient(sf::Uint16 port, sf::IpAddress addr);
         bool StartServer(sf::Uint16 port);
         void Stop();
-        void Send(sg::CommPacket &p);
-        bool Receive(sg::CommPacket &p);
+        void Send(sg::CommEvent &p);
+        bool Receive(sg::CommEvent &p);
     protected:
         sf::TcpListener Listener;
 
@@ -94,8 +100,9 @@ namespace sg
         bool NotDone;
         sf::Uint32 TotalConnectCount;
 
-        //SendSystem enqueues a CommPacket into the incoming queues - where the instantiating scope will then be able to processes them as events
-        void SendSystem(sg::CommPacket::CommPacketType msgId, sf::Uint32 connectionId, std::string msg);
+        //SendSystem enqueues a CommEvent into the incoming queues - where the instantiating scope will 
+        // then be able to processes them along other subsystem events(sfml-window)
+        void SendSystem(sg::CommEvent::CommEventType msgId, sf::Uint32 connectionId, std::string msg);
     };
 }
 

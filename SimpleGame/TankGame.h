@@ -20,64 +20,64 @@ using std::endl;
 
 namespace sg
 {
-    enum ConnectionState{
-        NOT_CONNECTED,
-        CONNECTED
-    };
-
 
 
     class TankGame
     {
     public:
-        
-
-        TankGame(int width, int height) : window(sf::VideoMode(width, height, 32), "Tank Game - v0.1")
+        TankGame(float width, float height) : 
+          window(sf::VideoMode((unsigned int)width,(unsigned int)height, 32), "Tank Game - v0.1")
         {
-            connectionState = NOT_CONNECTED;
+            connected = false;
             gameDone = false;
             aniIndex=0;
-            sf::View newView(sf::Vector2f(0.0f,0.0f),sf::Vector2f(400.0f, 300.0f));
-            window.setView(newView);
+            arenaView = sf::View(sf::Vector2f(0.0f,0.0f),sf::Vector2f(width, height));//400.0f, 300.0f));
+            hudView = sf::View(sf::Vector2f(0.0f,0.0f),sf::Vector2f(width, height));
+            
+            sf::FloatRect viewPort;
+            viewPort.left = -0.36f;
+            viewPort.top = 0.557f;
+            viewPort.width = 0.70f;
+            viewPort.height = 0.6f;
+            hudView.setViewport(viewPort);
+            window.setView(arenaView);
             gameWindowHasFocus = true;
-            displayDimensions = sf::Vector2f(width, height);
+            dispDim = sf::Vector2f(width, height);
         }
 
         enum GameDataType{
-            State,
-            HitConfirm
+            State
         };
 
-        void sendHitConfirm(sf::Uint32 pid);
         void sendState();
 
         void onInit();
-        void onRemoteEvent(sg::CommPacket & packet);
+        void onRemoteEvent(sg::CommEvent & packet);
         bool onLocalEvent(sf::Event & event);
         bool onLocalInput();
         void onLoop(sf::Time & frameTime);
         void onRender();
         void onCleanup();
 
-        sf::Vector2f displayDimensions;
-        HUD hud;
+        sg::Comm comm;
+        sg::HUD hud;
+        sf::Vector2f dispDim;
+        sg::Player player1;
+        sg::Player player2;
+        sg::Floor floor;
+
         
-
-
-        ConnectionState connectionState;
         sf::Uint32 connectionId;
         int aniIndex;
         sf::Clock aniClock;
         sf::Clock stateClock;
         sf::RenderWindow window;
-        sg::Comm comm;
-        Player player1;
-        Player player2;
-        sg::Floor floor;
+
+        bool connected;
         bool gameDone;
         bool gameWindowHasFocus;
-        long bytesTransmitted;
-        long bytesReceoved;
+        sf::View arenaView;
+        sf::View hudView;
     };
 }
 

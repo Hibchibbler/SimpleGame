@@ -36,9 +36,8 @@ int main(int argc, char **argv)
             }
         }
 
-        //Handle  Comm Events
-        //
-        sg::CommPacket packet;
+        //Handle Comm Events
+        sg::CommEvent packet;
         while (tankGame.comm.Receive(packet)){
             tankGame.onRemoteEvent(packet);
         }
@@ -60,7 +59,7 @@ int main(int argc, char **argv)
         tankGame.onRender();
 
         //keep this thread from hogging cpu
-        sf::sleep(sf::milliseconds(30));
+        sf::sleep(sf::milliseconds(20));
     }
 
     tankGame.onCleanup();

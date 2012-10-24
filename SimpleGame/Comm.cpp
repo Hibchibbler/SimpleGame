@@ -62,7 +62,7 @@ void sg::Comm::Stop()
 }
 
  //Send operates on the Established connections container
-void sg::Comm::Send(sg::CommPacket &gpacket)
+void sg::Comm::Send(sg::CommEvent &gpacket)
 {
     EstablishedMutex.lock();
     std::vector<sg::Connection>::iterator i = Established.begin();
@@ -77,7 +77,7 @@ void sg::Comm::Send(sg::CommPacket &gpacket)
 }
 
 //Receive operates on the Established connections container
-bool sg::Comm::Receive(sg::CommPacket &gpacket)
+bool sg::Comm::Receive(sg::CommEvent &gpacket)
 {
     //first check for system messages
     SystemMutex.lock();
@@ -143,7 +143,7 @@ void sg::Comm::CommLooper(Comm* comm)
 
                 //And add the client to the selector
                 comm->EstablishedSelector.add(*newConnection.Socket);
-                comm->SendSystem(sg::CommPacket::Acceptance, comm->TotalConnectCount, std::string("accepted Connection Request"));
+                comm->SendSystem(sg::CommEvent::Acceptance, comm->TotalConnectCount, std::string("accepted Connection Request"));
                 comm->TotalConnectCount++;
             }else{
                 //TODO: Handle This!!!!!!!!!
@@ -171,15 +171,15 @@ void sg::Comm::CommLooper(Comm* comm)
                     comm->EstablishedSelector.add(*i->Socket);
                     comm->Established.push_back(*i);//this must run before the QueueSystemMessage
                     
-                    comm->SendSystem(sg::CommPacket::Acceptance,comm->TotalConnectCount, std::string("Connected"));
+                    comm->SendSystem(sg::CommEvent::Acceptance,comm->TotalConnectCount, std::string("Connected"));
                     comm->TotalConnectCount++;
                     //The last thing we do.
                     i = comm->Connecting.erase(i);
                 }else {
                     if(s == sf::Socket::Disconnected)
-                        comm->SendSystem(sg::CommPacket::Disconnect, comm->TotalConnectCount, std::string("Client disconnected"));
+                        comm->SendSystem(sg::CommEvent::Disconnect, comm->TotalConnectCount, std::string("Client disconnected"));
                     else
-                        comm->SendSystem(sg::CommPacket::Error,  comm->TotalConnectCount, std::string("Error on receive"));
+                        comm->SendSystem(sg::CommEvent::Error,  comm->TotalConnectCount, std::string("Error on receive"));
                     //we'd better remove the socket from the selector
                     delete i->Socket;
                     delete i->SendMutex;
@@ -205,7 +205,7 @@ void sg::Comm::CommLooper(Comm* comm)
                     if (comm->EstablishedSelector.isReady(*i->Socket)){
                         //Client Ready to receive
 
-                        sg::CommPacket RecvPacket;
+                        sg::CommEvent RecvPacket;
                         RecvPacket.connectionId = i->connectionId;
                         sf::Socket::Status s;
                         s = i->Socket->receive(RecvPacket.packet);
@@ -218,9 +218,9 @@ void sg::Comm::CommLooper(Comm* comm)
                         }else{
                         
                             if(s == sf::Socket::Disconnected)
-                                comm->SendSystem(sg::CommPacket::Disconnect, RecvPacket.connectionId, std::string("Client disconnected"));
+                                comm->SendSystem(sg::CommEvent::Disconnect, RecvPacket.connectionId, std::string("Client disconnected"));
                             else
-                                comm->SendSystem(sg::CommPacket::Error, RecvPacket.connectionId, std::string("Error on receive"));
+                                comm->SendSystem(sg::CommEvent::Error, RecvPacket.connectionId, std::string("Error on receive"));
                             //we'd better remove the socket from the selector
                             comm->EstablishedSelector.remove(*i->Socket);
                             delete i->Socket;
@@ -250,13 +250,13 @@ void sg::Comm::CommLooper(Comm* comm)
                     connection->SendQueue.pop();
                     sf::Socket::Status s = connection->Socket->send(packet);
                     if (s == sf::Socket::Done){
-                        comm->SendSystem(sg::CommPacket::Sent, connection->connectionId, std::string("Sent"));
+                        comm->SendSystem(sg::CommEvent::Sent, connection->connectionId, std::string("Sent"));
                         ok = true;
                     }else{
                         if (s == sf::Socket::Disconnected)
-                            comm->SendSystem(sg::CommPacket::Disconnect, connection->connectionId, std::string("Client disconnected"));
+                            comm->SendSystem(sg::CommEvent::Disconnect, connection->connectionId, std::string("Client disconnected"));
                         else
-                            comm->SendSystem(sg::CommPacket::Error, connection->connectionId, std::string("Error on Send"));
+                            comm->SendSystem(sg::CommEvent::Error, connection->connectionId, std::string("Error on Send"));
 
                         //we'd better remove the socket from the selector
                         comm->EstablishedSelector.remove(*connection->Socket);
@@ -284,7 +284,7 @@ void sg::Comm::CommLooper(Comm* comm)
 }
 
 
-void sg::Comm::SendSystem(sg::CommPacket::CommPacketType msgId, sf::Uint32 connectionId, std::string msg)
+void sg::Comm::SendSystem(sg::CommEvent::CommEventType msgId, sf::Uint32 connectionId, std::string msg)
 {
     sf::Packet packet;
     packet <<  msgId << connectionId << msg;

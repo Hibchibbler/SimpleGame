@@ -44,12 +44,6 @@
     <ClInclude Include="LogFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Minion.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MinionManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md" />

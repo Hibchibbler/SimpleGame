@@ -12,13 +12,13 @@ Daniel Ferguson, Eddie Stranberg
  void sg::TankGame::onInit(){
 
     //Load Font
-    hud.load();
-    hud.setHealth(100);
-    hud.setVelocity(sf::Vector2f(0,0));
-    hud.setPos(sf::Vector2f(0,0));
+    dash.load();
+    dash.setHealth(100);
+    dash.setVelocity(sf::Vector2f(0,0));
+    dash.setPos(sf::Vector2f(0,0));
 
-    //Load floor
-    floor.Load(dispDim.x, dispDim.y);
+    //Load arenaMan
+    arenaMan.Load((sf::Uint32)dispDim.x, (sf::Uint32)dispDim.y);
 
 
     
@@ -336,8 +336,8 @@ void sg::TankGame::onLoop(sf::Time & frameTime){
     ////Wall Collision
     ////position our tank based on elapsed time and current velocity.
     ////But, we must not allow it to pass through obstacles
-    //std::vector<FloorTile>::iterator tile = floor.mapTiles.begin();
-    //for (; tile != floor.mapTiles.end(); tile++){
+    //std::vector<FloorTile>::iterator tile = arenaMan.mapTiles.begin();
+    //for (; tile != arenaMan.mapTiles.end(); tile++){
     //    //if this tile is an "obstacle",
     //    if (tile->id == 0){
     //        //then, check to see if the player overlaps it
@@ -391,8 +391,8 @@ void sg::TankGame::onLoop(sf::Time & frameTime){
         if (proj->sprite.getGlobalBounds().intersects(player1.bodySprite.getGlobalBounds())){
             player1.health--;
             cout << "Ouch" << endl;
-            //restate the hud Health 
-            hud.setHealth(player1.health);
+            //restate the dash Health 
+            dash.setHealth(player1.health);
             proj = player2.projectiles.erase(proj);
         }else{
             proj->sprite.move(proj->velocity.x*20*frameTime.asSeconds(),proj->velocity.y*20*frameTime.asSeconds());
@@ -403,12 +403,12 @@ void sg::TankGame::onLoop(sf::Time & frameTime){
     
 
 
-    //Update the HUD
-    hud.setHealth(player1.health);
-    hud.setAngles(player1.bodyAngle,player1.turretAngle);
-    hud.setPos(player1.position);
-    hud.setVelocity(player1.velocity);
-    hud.setHealth2(player2.health);
+    //Update the Dashboard
+    dash.setHealth(player1.health);
+    dash.setAngles(player1.bodyAngle,player1.turretAngle);
+    dash.setPos(player1.position);
+    dash.setVelocity(player1.velocity);
+    dash.setHealth2(player2.health);
 
     //Send player 1 state to remote client
     //at 50Hz
@@ -428,8 +428,8 @@ void sg::TankGame::onRender(){
     window.setView(arenaView);
 
     //Draw Floor
-    std::vector<FloorTile>::iterator tile = floor.mapTiles.begin();
-    for (; tile != floor.mapTiles.end(); tile++){
+    std::vector<FloorTile>::iterator tile = arenaMan.mapTiles.begin();
+    for (; tile != arenaMan.mapTiles.end(); tile++){
         window.draw(tile->sprite);
     }
 
@@ -453,18 +453,18 @@ void sg::TankGame::onRender(){
     }
     
     //Set View for drawing the HUD.
-    //we use a different view because we don't want the hud to scale when zooming in and out.    
+    //we use a different view because we don't want the dashboard to scale when zooming in and out.    
 
     //Draw all the HUD stuff
-    window.setView(hudView);    
-    window.draw(hud.dashSprite);
-    window.draw(hud.health);
-    window.draw(hud.velocity);
-    window.draw(hud.position);
-    window.draw(hud.angles);
-    window.draw(hud.health2);
+    window.setView(dashView);    
+    window.draw(dash.dashSprite);
+    window.draw(dash.health);
+    window.draw(dash.velocity);
+    window.draw(dash.position);
+    window.draw(dash.angles);
+    window.draw(dash.health2);
 
-    //Reset view to the state before we drew the hud
+    //Reset view to the state before we drew the dashboard
     window.setView(arenaView);
 
     //Finally, Display window contents on screen

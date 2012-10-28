@@ -11,8 +11,8 @@ Daniel Ferguson, Eddie Stranberg
 
 #include "Comm.h"
 #include "Player.h"
-#include "Floor.h"
-#include "HUD.h"
+#include "ArenaManager.h"
+#include "Dashboard.h"
 
 #include <list>
 #include <iostream>
@@ -21,8 +21,6 @@ using std::endl;
 
 namespace sg
 {
-
-
     class TankGame
     {
     public:
@@ -33,19 +31,17 @@ namespace sg
             gameDone = false;
             aniIndex=0;
             arenaView = sf::View(sf::Vector2f(0.0f,0.0f),sf::Vector2f(width, height));//400.0f, 300.0f));
-            hudView = sf::View(sf::Vector2f(0.0f,0.0f),sf::Vector2f(width, height));
+            dashView = sf::View(sf::Vector2f(0.0f,0.0f),sf::Vector2f(width, height));
             
             sf::FloatRect viewPort;
             viewPort.left = -0.36f;
             viewPort.top = 0.557f;
             viewPort.width = 0.70f;
             viewPort.height = 0.6f;
-            hudView.setViewport(viewPort);
+            dashView.setViewport(viewPort);
             window.setView(arenaView);
             gameWindowHasFocus = true;
             dispDim = sf::Vector2f(width, height);
-
-
         }
 
         enum GameDataType{
@@ -63,11 +59,11 @@ namespace sg
         void onCleanup();
 
         sg::Comm comm;
-        sg::HUD hud;
+        sg::Dashboard dash;
         sf::Vector2f dispDim;
         sg::Player player1;
         sg::Player player2;
-        sg::Floor floor;
+        sg::ArenaManager arenaMan;
 
         
         sf::Uint32 connectionId;
@@ -80,7 +76,7 @@ namespace sg
         bool gameDone;
         bool gameWindowHasFocus;
         sf::View arenaView;
-        sf::View hudView;
+        sf::View dashView;
     };
 }
 

@@ -151,8 +151,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Comm.h" />
-    <ClInclude Include="Floor.h" />
-    <ClInclude Include="HUD.h" />
+    <ClInclude Include="ArenaManager.h" />
+    <ClInclude Include="Dashboard.h" />
     <ClInclude Include="LogFile.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="TankGame.h" />

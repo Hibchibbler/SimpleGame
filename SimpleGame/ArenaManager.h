@@ -1,13 +1,13 @@
 /**********************************************************************************
 Tank Game
-Floor.h
+ArenaManager.h
 
 Copyright 2012
 Daniel Ferguson, Eddie Stranberg
 **********************************************************************************/
 
-#ifndef Floor_h_
-#define Floor_h_
+#ifndef ArenaManager_h_
+#define ArenaManager_h_
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
@@ -25,7 +25,7 @@ namespace sg
         sf::Sprite sprite;
     };
 
-    class Floor
+    class ArenaManager
     {
     public:
         bool Load(int screenWidth, int screenHeight){
@@ -126,7 +126,6 @@ namespace sg
 
         std::vector<sf::Image*> imageTiles;
         std::vector<sf::Texture*> texTiles;
-        sf::Sprite spriteTiles[7][7];
         std::vector<FloorTile> mapTiles;
         int width,height;
     };

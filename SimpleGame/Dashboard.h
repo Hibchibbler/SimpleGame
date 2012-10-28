@@ -6,21 +6,21 @@ Copyright 2012
 Daniel Ferguson, Eddie Stranberg
 **********************************************************************************/
 
-#ifndef HUD_h_
-#define HUD_h_
+#ifndef Dashboard_h_
+#define Dashboard_h_
 
 #include <SFML/Graphics.hpp>
 #include <sstream>
 #include <iomanip>
 namespace sg
 {
-    class HUD
+    class Dashboard
     {
     public:
-        HUD(){
+        Dashboard(){
         
         }
-        ~HUD(){}
+        ~Dashboard(){}
 
         void load(){
             hudPosition.x = 0;

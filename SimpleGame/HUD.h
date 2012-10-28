@@ -26,35 +26,38 @@ namespace sg
             hudPosition.x = 0;
             hudPosition.y = 0;
 
-            //find some ttf somewhere on your system, and modify the loadFromFile line accordingly.
-            //gameFont.loadFromFile("C:\\Users\\hibchibbler\\Downloads\\segment14\\hdad-segment14-1.002\\Segment14.otf");
-            gameFont.loadFromFile("digital-7mono.ttf");
+            hudFont.loadFromFile("digital-7mono.ttf");
             dashImage.loadFromFile("DashBoard.png");
             dashImage.createMaskFromColor(sf::Color::Cyan,0);
             dashTexture.loadFromImage(dashImage);
 
             dashSprite.setTexture(dashTexture);
-            //dashSprite.scale(6,0.6);
+            dashSprite.setPosition(0,0);
         
-            health.setFont(gameFont);
+            health.setFont(hudFont);
             health.setColor(sf::Color::Green);
             health.scale(0.7f,0.7f);
+            health.setPosition(0,0);
 
-            position.setFont(gameFont);
+            position.setFont(hudFont);
             position.setColor(sf::Color::Green);
             position.scale(0.7f,0.7f);
+            position.setPosition(0,60);
 
-            velocity.setFont(gameFont);
+            velocity.setFont(hudFont);
             velocity.setColor(sf::Color::Green);
             velocity.scale(0.7f,0.7f);
+            velocity.setPosition(0,100);
 
-            angles.setFont(gameFont);
+            angles.setFont(hudFont);
             angles.setColor(sf::Color::Green);
             angles.scale(0.7f,0.7f);
+            angles.setPosition(0,20);
 
-            health2.setFont(gameFont);
+            health2.setFont(hudFont);
             health2.setColor(sf::Color::Green);
             health2.scale(0.7f,0.7f);
+            health2.setPosition(300,120);
         }
 
         void setHealth(int h){ 
@@ -104,7 +107,7 @@ namespace sg
 
         sf::Vector2f hudPosition;
 
-        sf::Font gameFont;
+        sf::Font hudFont;
         sf::Text health;
         sf::Text health2;
         sf::Text position;

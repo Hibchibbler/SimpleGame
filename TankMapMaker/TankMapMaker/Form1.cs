@@ -11,16 +11,19 @@ namespace TankMapMaker
 {
     public partial class Form1 : Form
     {
-        int width = 20;
-        int height = 20;
+        int width = 30;
+        int height = 30;
 
         int[,] mapData = null;
 
         MapBrush current = null;
-        MapBrush zero = new MapBrush("0.png",0);
-        MapBrush one = new MapBrush("1.png",1);
-        MapBrush two = new MapBrush("2.png",2);
-        MapBrush three = new MapBrush("3.png",3);
+        MapBrush zero = new MapBrush("wall.png",0);//wall
+        MapBrush one = new MapBrush("floor1.png",1);//floor 1
+        MapBrush two = new MapBrush("floor2.png",2);//floor 2
+        MapBrush three = new MapBrush("0.png",3);// team 1 garage
+        MapBrush four = new MapBrush("1.png", 4);//team 2 garage
+        MapBrush five = new MapBrush("2.png", 5);//team 1 minion generator
+        MapBrush six = new MapBrush("3.png", 6);//team 2 minion generator
         Bitmap map = null;//new Bitmap(width * 16, height * 16);
 
         public Form1()
@@ -42,7 +45,7 @@ namespace TankMapMaker
             wy = sy / height;
         }
 
-        private void panelMap_MouseDown(object sender, MouseEventArgs e)
+        private void panelMap_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {
@@ -103,6 +106,12 @@ namespace TankMapMaker
                     current = two;
                 else if (a == 3)
                     current = three;
+                else if (a == 4)
+                    current = four;
+                else if (a == 5)
+                    current = five;
+                else if (a == 6)
+                    current = six;
             }
         }
 
@@ -119,6 +128,12 @@ namespace TankMapMaker
                     current = two;
                 else if (a == 3)
                     current = three;
+                else if (a == 4)
+                    current = four;
+                else if (a == 5)
+                    current = five;
+                else if (a == 6)
+                    current = six;
                 else
                     current = zero;
             }
@@ -154,6 +169,11 @@ namespace TankMapMaker
                 }
             }
             bw.Close();
+        }
+
+        private void panelMap_MouseDown(object sender, MouseEventArgs e)
+        {
+            panelMap_MouseMove(sender, e);
         }
     }
 }

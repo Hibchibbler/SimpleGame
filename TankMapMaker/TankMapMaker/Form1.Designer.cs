@@ -47,6 +47,7 @@
             this.panelMap.TabIndex = 0;
             this.panelMap.Paint += new System.Windows.Forms.PaintEventHandler(this.panelMap_Paint);
             this.panelMap.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panelMap_MouseDown);
+            this.panelMap.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panelMap_MouseMove);
             // 
             // comboBoxCellTypes
             // 

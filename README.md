@@ -34,7 +34,7 @@ There are different types of events, which means the payload formats can differ.
         sf::Uint32 packetType;  
         packet.packet >> packetType;  
 
-**The differences:**  
+**The different types:**  
  * sg::CommPacket::Acceptance  
  * sg::CommPacket::Disconnect  
  * sg::CommPacket::Data  
@@ -45,24 +45,43 @@ You need to use the sg::CommPacket::Acceptance and sg::CommPacket::Disconnect ev
 Acceptance means that either we successfully made an outgoing connection(if you chose StartClient()),  
 or an incoming connection request was accepted(if you chose StartServer())  
   
-In this game, we (attempt) to base the start of most game play when the sg::CommPacket::Acceptance occurs.  
-And also, in this game, if a Disconnect occurs, communication is halted, but everything else continues as normal.  
-TRIVIA: The reason you can't hurt the other tank when there is no one connected, is because it is the responsibility of a connected  
-client to reduce its own health when it detects it has been hit. So, without a connected client, there is no one to determine if the other tank is being hit!  
-  
 The primary packet type that is transmitted back and forth is sg::CommPacket::Data.  
 The players constantly use sg::CommPacket::Data packets to transmit their position and orientation values, and the position for every in-flight projectile.  
   
 The sg::CommPacket::Error packet type indicates an error occurred in the Comm object.  
-It is likely a failed outgoing connection, or the listener didn't like something you gave it.
+It is likely a failed outgoing connection, or the listener didn't bind to the port that you specified.
   
+
+
+
 Player  
 ------
 Player contains all state that is specific to a player. Player also contains the image data used drawing  
-the tank to the display. TankGame is composed of two instances of this class, among other things.  
+the tank to the display. TankGame is composed of two instances of this class, among other things.
+
+HUD
+---
+This contains all the player stats, and dashboard imagery.
+
+
+Floor
+-----
+This contains the crude map loading code, and gets all the right tiles in the right spot in a big vector.
+Each render pass, the vector is iterated through, and the individual tiles are plastered to the display.
+
+
+Map Maker
+=========
+The map maker is a simple app written with C#.
+I placed the C# project into the SimpleGame directory because i'm lazy, and i wanted to track it.
+the Directory containing the map maker visual studio solution file is SimpleGame\TankMapMaker
+
+The size of the map it produces is hard coded. so..
+
   
   
 Important links  
 ===============  
-http://www.dafont.com/digital-7.font  
-http://daringfireball.net/projects/markdown/dingus
+http://www.dafont.com/digital-7.font  <- where i found the currently used font. they want money.
+http://daringfireball.net/projects/markdown/dingus  <- "markdown" is what is used to create this README.md file
+

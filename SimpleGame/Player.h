@@ -44,6 +44,9 @@ namespace sg
             frictionCoefficient = 0.5f;
             turnVelocity = 0.0f;
             projectileCount = 0;
+
+            position.x = 200;
+            position.y = 200;
         }
         std::string name;
 

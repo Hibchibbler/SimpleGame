@@ -153,6 +153,9 @@
     <ClInclude Include="Comm.h" />
     <ClInclude Include="Floor.h" />
     <ClInclude Include="HUD.h" />
+    <ClInclude Include="LogFile.h" />
+    <ClInclude Include="Minion.h" />
+    <ClInclude Include="MinionManager.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="TankGame.h" />
   </ItemGroup>

@@ -15,6 +15,16 @@ Daniel Ferguson, Eddie Stranberg
 
 namespace sg
 {
+    class FloorTile
+    {
+    public:
+        FloorTile(){
+            id = 0;
+        }
+        sf::Uint32 id;
+        sf::Sprite sprite;
+    };
+
     class Floor
     {
     public:
@@ -41,9 +51,21 @@ namespace sg
             imageTiles.push_back(new sf::Image());
             imageTiles.back()->loadFromFile("floor3.png");
 
+            imageTiles.push_back(new sf::Image());
+            imageTiles.back()->loadFromFile("team1Garage.png");
+
+            imageTiles.push_back(new sf::Image());
+            imageTiles.back()->loadFromFile("team2Garage.png");
+
+            imageTiles.push_back(new sf::Image());
+            imageTiles.back()->loadFromFile("team1Generator.png");
+
+            imageTiles.push_back(new sf::Image());
+            imageTiles.back()->loadFromFile("team2Generator.png");
+
             //And associate a texture with them.
             texTiles.push_back(new sf::Texture());
-            texTiles.back()->loadFromImage(*imageTiles[0]);//*imageTiles.back());
+            texTiles.back()->loadFromImage(*imageTiles[0]);
 
             texTiles.push_back(new sf::Texture());
             texTiles.back()->loadFromImage(*imageTiles[1]);
@@ -51,8 +73,20 @@ namespace sg
             texTiles.push_back(new sf::Texture());
             texTiles.back()->loadFromImage(*imageTiles[2]);
 
+            texTiles.push_back(new sf::Texture());
+            texTiles.back()->loadFromImage(*imageTiles[3]);
+
+            texTiles.push_back(new sf::Texture());
+            texTiles.back()->loadFromImage(*imageTiles[4]);
+
+            texTiles.push_back(new sf::Texture());
+            texTiles.back()->loadFromImage(*imageTiles[5]);
+
+            texTiles.push_back(new sf::Texture());
+            texTiles.back()->loadFromImage(*imageTiles[6]);
+
             //Read map file just for width and height.
-            std::ifstream fin("export.txt",std::ios::in|std::ios::binary  );
+            std::ifstream fin("map_garage_mgenerator.txt",std::ios::in|std::ios::binary  );
             if (fin.is_open()){
                 fin.read((char*)&width, 4);
                 fin.read((char*)&height, 4);
@@ -60,10 +94,12 @@ namespace sg
                 //Populate sprite vector with default sprites which represents the entire map.
                 for (int h = 0;h < height;h++){
                     for (int w = 0; w < width;w++){
-                        mapSprites.push_back(sf::Sprite(*texTiles.back()));
-                        float spriteWidth = mapSprites.back().getGlobalBounds().width;
-                        float spriteHeight = mapSprites.back().getGlobalBounds().height;
-                        mapSprites.back().setPosition((float)(w*spriteWidth-spriteWidth/2),(float)(h*spriteHeight-spriteHeight/2));
+                        FloorTile ft;
+                        ft.sprite.setTexture(*texTiles.back());
+                        mapTiles.push_back(ft);
+                        float spriteWidth = mapTiles.back().sprite.getGlobalBounds().width;
+                        float spriteHeight = mapTiles.back().sprite.getGlobalBounds().height;
+                        mapTiles.back().sprite.setPosition((float)(w*spriteWidth-spriteWidth/2),(float)(h*spriteHeight-spriteHeight/2));
                     }
                 }
 
@@ -73,9 +109,10 @@ namespace sg
                 while (!fin.eof()){
                     int i;
                     fin.read((char*)&i, 4);
-                    if (index == mapSprites.size())
+                    if (index == mapTiles.size())
                         break;
-                    mapSprites[index].setTexture(*texTiles[i]);
+                    mapTiles[index].id = i;
+                    mapTiles[index].sprite.setTexture(*texTiles[i]);
                     index++;
                     std::cout << index << std::endl;
                 }
@@ -90,7 +127,7 @@ namespace sg
         std::vector<sf::Image*> imageTiles;
         std::vector<sf::Texture*> texTiles;
         sf::Sprite spriteTiles[7][7];
-        std::vector<sf::Sprite> mapSprites;
+        std::vector<FloorTile> mapTiles;
         int width,height;
     };
 }

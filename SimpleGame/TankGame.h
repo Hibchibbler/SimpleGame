@@ -14,6 +14,7 @@ Daniel Ferguson, Eddie Stranberg
 #include "Floor.h"
 #include "HUD.h"
 
+#include <list>
 #include <iostream>
 using std::cout;
 using std::endl;
@@ -43,6 +44,8 @@ namespace sg
             window.setView(arenaView);
             gameWindowHasFocus = true;
             dispDim = sf::Vector2f(width, height);
+
+
         }
 
         enum GameDataType{

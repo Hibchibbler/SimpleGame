@@ -7,9 +7,12 @@ Daniel Ferguson, Eddie Stranberg
 **********************************************************************************/
 
 #include "TankGame.h"
+#include "LogFile.h"
 
 int main(int argc, char **argv)
 {
+
+    LogFile::get()->log(1, 0, "hello");
 
     //Instantiate the game state
     sg::TankGame tankGame(1024, 600);
@@ -25,7 +28,7 @@ int main(int argc, char **argv)
 
     // Start game loop
     while (tankGame.window.isOpen()){
-
+        LogFile::get()->log(1, 0, "Pwap");
         // Handle Local Events
         //go through all currently pending events from the window subsystem.
         //close, resize, mousemove(which we use to orient the turret)
@@ -64,7 +67,7 @@ int main(int argc, char **argv)
 
     tankGame.onCleanup();
 
-
+    LogFile::get()->log(1, 0, "Goodbye");
     return EXIT_SUCCESS;
 }
 

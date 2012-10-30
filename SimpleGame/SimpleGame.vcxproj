@@ -153,9 +153,18 @@
     <ClInclude Include="Comm.h" />
     <ClInclude Include="ArenaManager.h" />
     <ClInclude Include="Dashboard.h" />
+    <ClInclude Include="GameState.h" />
     <ClInclude Include="LogFile.h" />
+    <ClInclude Include="Minion.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayerManager.h" />
+    <ClInclude Include="Projectile.h" />
+    <ClInclude Include="Settings.h" />
+    <ClInclude Include="Tank.h" />
     <ClInclude Include="TankGame.h" />
+    <ClInclude Include="Sprites.h" />
+    <ClInclude Include="Team.h" />
+    <ClInclude Include="TeamManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md" />

@@ -28,7 +28,7 @@ int main(int argc, char **argv)
 
     // Start game loop
     while (tankGame.window.isOpen()){
-        LogFile::get()->log(1, 0, "Pwap");
+        //LogFile::get()->log(1, 0, "Pwap");
         // Handle Local Events
         //go through all currently pending events from the window subsystem.
         //close, resize, mousemove(which we use to orient the turret)

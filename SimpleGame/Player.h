@@ -10,64 +10,38 @@ Daniel Ferguson, Eddie Stranberg
 #define Player_h_
 
 #include <SFML/Graphics.hpp>
-
+#include "Projectile.h"
+#include "Tank.h"
 namespace sg
 {
-    class Frame
-    {
-    public:
-        sf::Image image;
-        sf::Texture tex;
-    };
+    
 
-    class Projectile
+    class PlayerState
     {
     public:
-        sf::Uint32 id;
-        sf::Vector2f position;
-        sf::Vector2f velocity;
-        sf::Sprite sprite;
+        PlayerState(){
+            health = 100.0f;
+            projectileCount = 0;
+            teamUid = -1;
+        }
+        sf::Uint32 playerId;
+        std::string playerName;
+        sf::Uint32 projectileCount;
+        float health;
+        sf::Uint32 teamUid;
+    private:
     };
 
     class Player
     {
     public:
         Player(){
-            velocity.x = 0;
-            velocity.y = 0;
-            bodyAngle = 0.0f;
-            throttle = 0.0f;
-            bodyAngle = 0.0f;
-            turretAngle = 0.0f;
-            health = 100.0f;
-            mass = 5.0f;
-            frictionCoefficient = 0.5f;
-            turnVelocity = 0.0f;
-            projectileCount = 0;
-
-            position.x = 200;
-            position.y = 200;
         }
-        std::string name;
-
-        std::vector<Frame> bodyFrames;
-        Frame turretFrame;
-        Frame projectileFrame;
-
-        sf::Sprite bodySprite;
-        sf::Sprite turretSprite;
+        Tank tank;
         std::vector<Projectile> projectiles;
-
-        sf::Vector2f position;
-        sf::Vector2f velocity;
-        sf::Uint32 projectileCount;
-        float throttle;
-        float bodyAngle;
-        float turretAngle;
-        float turnVelocity;
-        float mass;
-        float frictionCoefficient;
-        float health;
+        PlayerState playerState;
+        
+        
     };
 };
 

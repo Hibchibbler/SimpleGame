@@ -10,9 +10,11 @@ Daniel Ferguson, Eddie Stranberg
 #define TankGame_h_
 
 #include "Comm.h"
-#include "Player.h"
+#include "TeamManager.h"
+#include "PlayerManager.h"
 #include "ArenaManager.h"
 #include "Dashboard.h"
+
 
 #include <list>
 #include <iostream>
@@ -29,27 +31,35 @@ namespace sg
         {
             connected = false;
             gameDone = false;
-            aniIndex=0;
+            gameWindowHasFocus = true;
+            isServer = false;
+            dispDim = sf::Vector2f(width, height);
             arenaView = sf::View(sf::Vector2f(0.0f,0.0f),sf::Vector2f(width, height));//400.0f, 300.0f));
             dashView = sf::View(sf::Vector2f(0.0f,0.0f),sf::Vector2f(width, height));
-            
+            window.setView(arenaView);
             sf::FloatRect viewPort;
             viewPort.left = -0.36f;
             viewPort.top = 0.557f;
             viewPort.width = 0.70f;
             viewPort.height = 0.6f;
             dashView.setViewport(viewPort);
-            window.setView(arenaView);
-            gameWindowHasFocus = true;
-            dispDim = sf::Vector2f(width, height);
         }
+
+        enum GameState{
+            WaitOnStartType,
+            WaitOnStart,
+            Started,
+            Victory,
+            Loss,
+        };
 
         enum GameDataType{
             State
         };
 
-        void sendState();
 
+
+        void sendState();
         void onInit();
         void onRemoteEvent(sg::CommEvent & packet);
         bool onLocalEvent(sf::Event & event);
@@ -60,23 +70,22 @@ namespace sg
 
         sg::Comm comm;
         sg::Dashboard dash;
-        sf::Vector2f dispDim;
-        sg::Player player1;
-        sg::Player player2;
         sg::ArenaManager arenaMan;
-
-        
-        sf::Uint32 connectionId;
-        int aniIndex;
-        sf::Clock aniClock;
-        sf::Clock stateClock;
+        sg::PlayerManager playerMan;
+        sg::TeamManager teamMan;
         sf::RenderWindow window;
-
+        sf::View arenaView;
+        sf::View dashView;
+        
+        sf::Vector2f dispDim;
+        sf::Uint32 connectionId;
+        sf::Clock stateClock;
+        sf::Clock minionClock;
         bool connected;
         bool gameDone;
         bool gameWindowHasFocus;
-        sf::View arenaView;
-        sf::View dashView;
+        bool isServer;
+
     };
 }
 

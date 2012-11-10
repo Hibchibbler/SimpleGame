@@ -7,16 +7,18 @@ Daniel Ferguson, Eddie Stranberg
 **********************************************************************************/
 
 #include "TankGame.h"
+
 #include "LogFile.h"
 
 int main(int argc, char **argv)
 {
-
-    LogFile::get()->log(1, 0, "hello");
+    //Load Assets
+    //sg::AssetManager am;
+    //am.load();
 
     //Instantiate the game state
-    sg::TankGame tankGame(1024, 600);
-    tankGame.onInit();
+    sg::TankGame tankGame(800, 600);
+    tankGame.doInit();
     
     //House keeping variables
     sf::Clock clock;
@@ -25,9 +27,14 @@ int main(int argc, char **argv)
     sf::Time previousTime;
     sf::Time currentTime;
     sf::Time deltaTime;
-
+    bool firstIteration = true;
     // Start game loop
     while (tankGame.window.isOpen()){
+
+        if (firstIteration){
+            
+            firstIteration=false;
+        }
         //LogFile::get()->log(1, 0, "Pwap");
         // Handle Local Events
         //go through all currently pending events from the window subsystem.
@@ -46,7 +53,7 @@ int main(int argc, char **argv)
         }
  
         //Handle fast local input
-        tankGame.onLocalInput();
+        tankGame.doLocalInput();
 
         //Get our master timer stuff
         previousTime = currentTime;
@@ -56,16 +63,16 @@ int main(int argc, char **argv)
 
         //Calculate position, and orientation of all things in the game.
         //and toggle through sprites for animation effect.
-        tankGame.onLoop(frameTime);
+        tankGame.doLoop(frameTime);
         
         //Draw all thhings in the game
-        tankGame.onRender();
+        tankGame.doRender();
 
         //keep this thread from hogging cpu
         sf::sleep(sf::milliseconds(20));
     }
 
-    tankGame.onCleanup();
+    tankGame.doCleanup();
 
     LogFile::get()->log(1, 0, "Goodbye");
     return EXIT_SUCCESS;

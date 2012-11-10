@@ -14,7 +14,10 @@ Daniel Ferguson, Eddie Stranberg
 #include "PlayerManager.h"
 #include "ArenaManager.h"
 #include "Dashboard.h"
-
+#include "AssetManager.h"
+#include "StartPopup.h"
+#include "LobbyPopup.h"
+#include "Mechanics.h"
 
 #include <list>
 #include <iostream>
@@ -26,8 +29,14 @@ namespace sg
     class TankGame
     {
     public:
+        enum GameState{
+            START,
+            LOBBY,
+            RUN,
+            DONE
+        };
         TankGame(float width, float height) : 
-          window(sf::VideoMode((unsigned int)width,(unsigned int)height, 32), "Tank Game - v0.1")
+          window(sf::VideoMode((unsigned int)width,(unsigned int)height, 32), "Tank Game - v0.3")
         {
             connected = false;
             gameDone = false;
@@ -43,15 +52,9 @@ namespace sg
             viewPort.width = 0.70f;
             viewPort.height = 0.6f;
             dashView.setViewport(viewPort);
+            gameState = START;
+            
         }
-
-        enum GameState{
-            WaitOnStartType,
-            WaitOnStart,
-            Started,
-            Victory,
-            Loss,
-        };
 
         enum GameDataType{
             State
@@ -59,33 +62,41 @@ namespace sg
 
 
 
-        void sendState();
-        void onInit();
-        void onRemoteEvent(sg::CommEvent & packet);
+        void sendPlayerState();
+        void doInit();
+        void onRemoteEvent(sg::CommEvent & event);
         bool onLocalEvent(sf::Event & event);
-        bool onLocalInput();
-        void onLoop(sf::Time & frameTime);
-        void onRender();
-        void onCleanup();
+        bool doLocalInput();
+        void doLoop(sf::Time & frameTime);
+        void doRender();
+        void doCleanup();
 
         sg::Comm comm;
         sg::Dashboard dash;
         sg::ArenaManager arenaMan;
-        sg::PlayerManager playerMan;
         sg::TeamManager teamMan;
         sf::RenderWindow window;
         sf::View arenaView;
         sf::View dashView;
+        sg::AssetManager assetMan;
+        sg::StartPopup startPopup;
+        sg::LobbyPopup lobbyPopup;
+        sg::Mechanics mechanics;
         
         sf::Vector2f dispDim;
         sf::Uint32 connectionId;
         sf::Clock stateClock;
         sf::Clock minionClock;
+        sf::Clock transitionClock;
         bool connected;
         bool gameDone;
         bool gameWindowHasFocus;
         bool isServer;
+        int my_team;
 
+        GameState gameState;
+    private:
+        bool zoom(int delta, sf::View & v, sf::Vector2f screenSize);
     };
 }
 

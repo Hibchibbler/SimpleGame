@@ -14,6 +14,7 @@ Daniel Ferguson, Eddie Stranberg
 #include <iomanip>
 namespace sg
 {
+    //TODO: doesn't use asset manager!! Isn't fit naming convention scheme
     class Dashboard
     {
     public:
@@ -26,8 +27,8 @@ namespace sg
             hudPosition.x = 0;
             hudPosition.y = 0;
 
-            hudFont.loadFromFile("digital-7mono.ttf");
-            dashImage.loadFromFile("DashBoard.png");
+            hudFont.loadFromFile("Assets\\digital-7mono.ttf");
+            dashImage.loadFromFile("Assets\\DashBoard.png");
             dashImage.createMaskFromColor(sf::Color::Cyan,0);
             dashTexture.loadFromImage(dashImage);
 

@@ -1,0 +1,46 @@
+ //sf::Image* img = NULL;
+            ////Load floor tiles
+            //
+            //if ((img = new sf::Image()) == NULL){
+            //    //Memory allocation failure
+            //    return false;
+            //}
+            //floorImages.push_back(img);
+            //ret = floorImages.back()->loadFromFile("floor1.png");
+            //if (ret == false){
+            //    //Image load failure
+            //    return false;
+            //}
+            //floorTextures.push_back(new sf::Texture());
+            //floorTextures.back()->loadFromImage(*floorImages.back());// 0
+
+            //floorImages.push_back(new sf::Image());
+            //floorImages.back()->loadFromFile("floor2.png");
+            //floorTextures.push_back(new sf::Texture());
+            //floorTextures.back()->loadFromImage(*floorImages.back());// 1
+            //
+            //floorImages.push_back(new sf::Image());
+            //floorImages.back()->loadFromFile("floor3.png");
+            //floorTextures.push_back(new sf::Texture());
+            //floorTextures.back()->loadFromImage(*floorImages.back());// 2
+
+            //floorImages.push_back(new sf::Image());
+            //floorImages.back()->loadFromFile("team1Garage.png");
+            //floorTextures.push_back(new sf::Texture());
+            //floorTextures.back()->loadFromImage(*floorImages.back());// 3
+
+            //floorImages.push_back(new sf::Image());
+            //floorImages.back()->loadFromFile("team2Garage.png");
+            //floorTextures.push_back(new sf::Texture());
+            //floorTextures.back()->loadFromImage(*floorImages.back());// 4
+
+            //floorImages.push_back(new sf::Image());
+            //floorImages.back()->loadFromFile("team1Generator.png");
+            //floorTextures.push_back(new sf::Texture());
+            //floorTextures.back()->loadFromImage(*floorImages.back());// 5
+
+            //floorImages.push_back(new sf::Image());
+            //floorImages.back()->loadFromFile("team2Generator.png");
+            //floorTextures.push_back(new sf::Texture());
+            //floorTextures.back()->loadFromImage(*floorImages.back());// 6
+

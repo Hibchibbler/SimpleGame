@@ -1,13 +1,13 @@
 /**********************************************************************************
 Tank Game
-Sprites.h
+Images.h
 
 Copyright 2012
 Daniel Ferguson, Eddie Stranberg
 **********************************************************************************/
 
-#ifndef Sprites_h_
-#define Sprites_h_
+#ifndef Images_h_
+#define Images_h_
 
 #include <SFML/Graphics.hpp>
 
@@ -48,6 +48,14 @@ namespace sg
     class FloorImage
     {
     public:
+        int load(std::string fn){
+            img = new sf::Image();
+            img->loadFromFile(fn);
+            img->createMaskFromColor(sf::Color::Cyan,0);
+            tex = new sf::Texture();
+            tex->loadFromImage(*img);
+            return 0;
+        }
         sf::Image* img;
         sf::Texture* tex;
     };
@@ -55,9 +63,9 @@ namespace sg
     class ProjectileImage
     {
     public:
-        int load(std::string projectileFn){
+        int load(std::string fn){
             img = new sf::Image();
-            img->loadFromFile(projectileFn);
+            img->loadFromFile(fn);
             img->createMaskFromColor(sf::Color::Cyan,0);
             tex = new sf::Texture();
             tex->loadFromImage(*img);
@@ -74,6 +82,14 @@ namespace sg
     class MinionImage
     {
     public:
+        int load(std::string fn){
+            img = new sf::Image();
+            img->loadFromFile(fn);
+            img->createMaskFromColor(sf::Color::Cyan,0);
+            tex = new sf::Texture();
+            tex->loadFromImage(*img);
+            return 0;
+        }
         sf::Image* img;
         sf::Texture* tex;
     };
@@ -104,6 +120,25 @@ namespace sg
         }
         sf::Uint32 id;
         sf::Sprite sprite;
+    };
+
+    class ImageAsset
+    {
+    public:
+        void load(std::string fn){
+            i.loadFromFile(fn);
+            i.createMaskFromColor(sf::Color::Cyan,0);
+            t.loadFromImage(i);
+        }
+
+        sf::Texture & getTexture(){
+            return t;
+        }
+        sf::Image & getImage(){return i;}
+    private:
+        sf::Image i;
+        sf::Texture t;
+
     };
 };
 
